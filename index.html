@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormBuilder Demo</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    h1, h2 {
+      color: #333;
+    }
+    
+    .container {
+      margin-bottom: 30px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #fff;
+    }
+    
+    .button-container {
+      margin-top: 15px;
+    }
+    
+    button {
+      background-color: #4a90e2;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    button:hover {
+      background-color: #357abf;
+    }
+  </style>
+</head>
+<body>
+  <h1>Demostración de FormBuilder</h1>
+
+  <div class="container form-builder">
+    <div class="field col-12">
+      <label for="version">Select version</label>
+      <select name="version" id="version" class="form-control">
+        <option value="complete">Complete</option>
+        <option value="preview">Only preview</option>
+        <option value="simple">Simple</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="container" id="complete">
+    <h2>Constructor de formularios completo</h2>
+    <div id="programmaticContainer"></div>
+    <div class="button-container">
+      <button onclick="addSampleFields()">Añadir campos de ejemplo</button>
+      <button onclick="exportFormData()">Exportar JSON</button>
+      <button onclick="importFormData()">Importar JSON</button>
+      <button onclick="generateHTML()">Generar HTML</button>
+    </div>
+    <div id="formBuilderContainer"></div>
+  </div>
+
+  <div class="container d-none" id="preview">
+    <h2>Solo vista previa</h2>
+    <div id="previewOnlyContainer"></div>
+  </div>
+
+  <div class="container d-none" id="simple">
+    <h2>Constructor simplificado</h2>
+    <div id="simpleBuilderContainer"></div>
+  </div>
+
+  
+
+  <script src="/js/FormBuilder.js"></script>
+  <script >
+    // Ejemplo 1: Modo constructor completo
+// --------------------------------------
+// Crear un formulario con todas las opciones
+const container1 = document.getElementById('formBuilderContainer');
+const formBuilder1 = new FormBuilder({
+  container: container1,
+  previewOnly: false, 
+  showJsonView: true,
+  allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help'],
+  showFieldControls: true,
+  enableRealTime: true,
+  inputHidden: 'form-custom',
+  onChange: function(data) {
+    console.log('Formulario actualizado:', data);
+  }
+});
+
+// Ejemplo 2: Solo modo vista previa
+// --------------------------------------
+// Crear un formulario que solo muestra la vista previa con datos predefinidos
+const container2 = document.getElementById('previewOnlyContainer');
+const initialData = [
+  {
+    id: "nombre",
+    name: "nombre",
+    label: "Nombre completo",
+    type: "text",
+    placeholder: "Escriba su nombre completo",
+    help: "Por favor ingrese su nombre y apellidos"
+  },
+  {
+    id: "email",
+    name: "email",
+    label: "Correo electrónico",
+    type: "email",
+    placeholder: "ejemplo@correo.com",
+    help: "Utilizaremos este email para contactarle"
+  },
+  {
+    id: "edad",
+    name: "edad",
+    label: "Edad",
+    type: "number",
+    placeholder: "Su edad"
+  },
+  {
+    id: "categoria",
+    name: "categoria",
+    label: "Categoría",
+    type: "select",
+    options: ["Principiante", "Intermedio", "Avanzado"]
+  },
+  {
+    id: "genero",
+    name: "genero",
+    label: "Género",
+    type: "radio",
+    options: ["Masculino", "Femenino", "Otro"]
+  },
+  {
+    id: "intereses",
+    name: "intereses",
+    label: "Intereses",
+    type: "checkbox",
+    options: ["Deportes", "Música", "Cine", "Lectura", "Viajes"]
+  },
+  {
+    id: "comentarios",
+    name: "comentarios",
+    label: "Comentarios adicionales",
+    type: "textarea",
+    placeholder: "Escriba sus comentarios aquí"
+  }
+];
+
+const formBuilder2 = new FormBuilder({
+  container: container2,
+  previewOnly: true,
+  initialData: initialData
+});
+
+// Ejemplo 3: Constructor simplificado
+// --------------------------------------
+// Solo algunos campos del constructor
+const container3 = document.getElementById('simpleBuilderContainer');
+const formBuilder3 = new FormBuilder({
+  container: container3,
+  allowedFields: ['type', 'fieldId', 'label'], // Solo los campos esenciales
+  showFieldControls: true
+});
+
+
+// Ejemplo de cómo añadir campos programáticamente
+function addSampleFields() {
+  // Configurar campos manualmente
+  formBuilder1.typeField.value = 'text';
+  formBuilder1.fieldIdField.value = 'sample_field';
+  formBuilder1.labelField.value = 'Campo de ejemplo';
+  formBuilder1.placeholderField.value = 'Este es un ejemplo';
+  formBuilder1.helpField.value = 'Campo añadido mediante código';
+  
+  // Añadir el campo
+  formBuilder1.addField();
+  
+  // Añadir un campo de selección
+  formBuilder1.typeField.value = 'select';
+  formBuilder1.fieldIdField.value = 'sample_select';
+  formBuilder1.labelField.value = 'Selección de ejemplo';
+  
+  // Añadir opciones programáticamente
+  formBuilder1.optionList = ['Opción 1', 'Opción 2', 'Opción 3'];
+  formBuilder1.renderOptionTags();
+  
+  // Añadir el campo
+  formBuilder1.addField();
+}
+
+// Ejemplo de cómo exportar e importar
+function exportFormData() {
+  const jsonData = formBuilder1.exportFormJSON();
+  console.log(jsonData);
+  // Aquí podríamos guardar el JSON en localStorage, enviarlo a un servidor, etc.
+  return jsonData;
+}
+
+function importFormData() {
+  const jsonData = exportFormData(); // En un caso real, este JSON vendría de otra fuente
+  formBuilder1.importFormJSON(jsonData);
+}
+
+// Generar HTML del formulario
+function generateHTML() {
+  const html = formBuilder1.generateFormHTML();
+  console.log(html);
+  // En un caso real, podríamos insertar este HTML en otra parte de la página
+  return html;
+}
+
+const version = document.getElementById('version');
+const containers = ['complete', 'preview', 'simple'];
+
+version.addEventListener('change', () => {
+  const selectedValue = version.value;
+
+  // Ocultar todos los contenedores
+  containers.forEach(id => {
+    document.getElementById(id).classList.add('d-none');
+  });
+
+  // Mostrar el contenedor seleccionado
+  const selectedContainer = document.getElementById(selectedValue);
+  if (selectedContainer) {
+    selectedContainer.classList.remove('d-none');
+  }
+});
+  </script>
+</body>
+</html>
