@@ -1,75 +1,84 @@
 # FormBuilder
 
-FormBuilder is a versatile JavaScript library that allows you to dynamically create and manage forms with a visual interface. It provides real-time previews, multilingual support, and flexible customization options.
+FormBuilder is a lightweight JavaScript library for creating dynamic form builders with an intuitive visual interface. It allows users to create, edit, and preview forms without writing HTML code.
+
+
 
 ## Features
 
-- Visual form builder interface
-- Real-time form preview
-- Multi-language support (English, Spanish, French, German)
-- Multiple field types support (text, number, email, date, checkbox, radio, select, textarea)
-- Field reordering, editing, and deletion
-- JSON import/export functionality
-- Highly customizable
+- 🎨 **Drag and drop interface**: Create forms intuitively
+- 👁️ **Real-time preview**: See changes as you edit
+- 📱 **Responsive**: Works on mobile and desktop devices
+- 🔄 **Import/Export**: Save and load forms as JSON
+- 🌐 **Multilingual**: Support for different languages (currently Spanish)
+- 🎯 **Customizable**: Multiple configuration options
+
+## Supported Field Types
+
+- 📝 Simple text (text)
+- 🔢 Number (number)
+- ✉️ Email (email)
+- 📅 Date (date)
+- ✅ Checkbox
+- ⚪ Radio buttons
+- 📋 Select / Dropdown
+- 📄 Text area (textarea)
 
 ## Installation
 
-Include the FormBuilder JavaScript file in your HTML:
+### Prerequisites
+
+- Bootstrap 5 (for styles)
+
+### Basic Usage
+
+1. Include the necessary files in your HTML:
 
 ```html
+<!-- Bootstrap CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- FormBuilder JavaScript -->
 <script src="path/to/formbuilder.js"></script>
 ```
 
-Add the necessary CSS for optimal display:
+2. Create a container for FormBuilder:
 
 ```html
-<link rel="stylesheet" href="path/to/formbuilder.css">
+<div id="formBuilder"></div>
 ```
 
-## Basic Usage
+3. Initialize FormBuilder:
 
 ```javascript
-// Create a container element
 const container = document.getElementById('formBuilder');
-
-// Initialize FormBuilder
 const formBuilder = new FormBuilder({
   container: container,
-  lang: 'en'  // 'en', 'es', 'fr', or 'de'
+  lang: 'en'
 });
 ```
 
 ## Configuration Options
 
 | Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `container` | HTMLElement | null | Container element for the FormBuilder (required) |
-| `inputHidden` | String | 'jsonForm' | ID for the hidden input that stores the form JSON |
-| `previewOnly` | Boolean | false | Show only the form preview (no builder interface) |
-| `allowedFields` | Array | ['type', 'fieldId', 'label', 'placeholder', 'options', 'help'] | List of configurable fields to show |
-| `showFieldControls` | Boolean | true | Show edit/move/delete controls for fields |
-| `initialData` | Array | [] | Initial form fields data |
-| `onChange` | Function | null | Callback function when form structure changes |
-| `enableRealTime` | Boolean | true | Enable real-time preview of fields while editing |
-| `lang` | String | 'es' | Interface language ('es', 'en', 'fr', 'de') |
+|--------|------|---------------|-------------|
+| `container` | HTMLElement | `null` | Container element where FormBuilder will be rendered |
+| `inputHidden` | String | `'jsonForm'` | ID of the hidden input that will store the form JSON |
+| `previewOnly` | Boolean | `false` | If `true`, only shows the preview without editor |
+| `allowedFields` | Array | `['type', 'fieldId', 'label', 'placeholder', 'options', 'help']` | Fields allowed in the editor |
+| `showFieldControls` | Boolean | `true` | Shows edit/delete controls on fields |
+| `initialData` | Array | `[]` | Initial form data in JSON format |
+| `onChange` | Function | `null` | Callback function that runs when the form changes |
+| `enableRealTime` | Boolean | `true` | Activates real-time preview |
+| `realtimeLayout` | String | `'column'` | Preview layout ('column' or as specified) |
+| `previewMode` | String | `'modal'` | Preview mode ('modal' or 'inline') |
+| `lang` | String | `'en'` | Interface language ('es' available) |
 
-## Field Types
-
-FormBuilder supports the following field types:
-
-- `text` - Text input field
-- `number` - Numeric input field
-- `email` - Email input field
-- `date` - Date picker
-- `checkbox` - Checkbox field (with multiple options)
-- `radio` - Radio button group
-- `select` - Dropdown select field
-- `textarea` - Multi-line text area
-
-## Methods
+## Public Methods
 
 ### `getFormData()`
-Returns the current form data as a JavaScript object.
+
+Returns the form data as an array of objects.
 
 ```javascript
 const formData = formBuilder.getFormData();
@@ -77,175 +86,160 @@ console.log(formData);
 ```
 
 ### `setFormData(data)`
-Sets the form structure from a JavaScript object.
+
+Sets the form data from an array.
 
 ```javascript
-formBuilder.setFormData([
+const data = [
   {
-    id: "fullname",
-    name: "fullname",
-    label: "Full Name",
-    type: "text",
-    placeholder: "Your full name",
-    help: "Please enter your full name"
-  },
-  {
-    id: "email",
-    name: "email",
-    label: "Email Address",
-    type: "email",
-    placeholder: "your@email.com",
-    help: "We'll never share your email"
+    "id": "name",
+    "name": "name",
+    "label": "Full Name",
+    "type": "text",
+    "placeholder": "Enter your name",
+    "help": "Please enter your full name"
   }
-]);
+];
+
+formBuilder.setFormData(data);
 ```
 
 ### `generateFormHTML()`
-Generates HTML code for the current form.
+
+Generates the form HTML based on current data.
 
 ```javascript
-const formHTML = formBuilder.generateFormHTML();
-document.getElementById('formContainer').innerHTML = formHTML;
+const html = formBuilder.generateFormHTML();
+document.getElementById('myForm').innerHTML = html;
 ```
 
 ### `exportFormJSON()`
-Exports the form structure as a JSON string.
+
+Exports the form as JSON.
 
 ```javascript
-const jsonData = formBuilder.exportFormJSON();
-console.log(jsonData);
+const json = formBuilder.exportFormJSON();
+localStorage.setItem('myForm', json);
 ```
 
 ### `importFormJSON(jsonString)`
-Imports form structure from a JSON string.
+
+Imports a form from JSON.
 
 ```javascript
-const jsonString = '[ { "id": "name", "name": "name", "label": "Name", "type": "text", "placeholder": "Your name", "help": "Please enter your name" } ]';
-formBuilder.importFormJSON(jsonString);
+const json = localStorage.getItem('myForm');
+formBuilder.importFormJSON(json);
 ```
 
 ### `setLanguage(lang)`
+
 Changes the interface language.
 
 ```javascript
-// Change language to English
-formBuilder.setLanguage('en'); // 'en', 'es', 'fr', 'de'
+formBuilder.setLanguage('en');
 ```
 
-## Examples
+## Data Structure
 
-### Basic Form Builder
+Each form field is represented as an object with the following structure:
+
+```javascript
+{
+  "id": "unique_field",      // Unique field ID
+  "name": "unique_field",    // Field name (usually same as ID)
+  "label": "Label",          // Label text
+  "type": "text",            // Field type
+  "placeholder": "Placeholder", // Placeholder text (optional)
+  "help": "Help text",       // Help text (optional)
+  "options": []              // Options for select/radio/checkbox
+}
+```
+
+## Complete Usage Example
 
 ```html
-<div id="formBuilder"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FormBuilder Demo</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="mb-4">Form Builder</h1>
+    
+    <div id="formBuilder"></div>
+    
+    <div class="mt-4">
+      <button id="saveBtn" class="btn btn-success">Save Form</button>
+      <button id="loadBtn" class="btn btn-primary">Load Form</button>
+    </div>
+  </div>
 
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    const container = document.getElementById('formBuilder');
-    const formBuilder = new FormBuilder({
-      container: container,
-      lang: 'en'
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="path/to/formbuilder.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const container = document.getElementById('formBuilder');
+      const formBuilder = new FormBuilder({
+        container: container,
+        lang: 'en',
+        onChange: function(data) {
+          console.log('Form updated:', data);
+        }
+      });
+      
+      // Button to save the form
+      document.getElementById('saveBtn').addEventListener('click', function() {
+        const json = formBuilder.exportFormJSON();
+        localStorage.setItem('savedForm', json);
+        alert('Form saved successfully');
+      });
+      
+      // Button to load a saved form
+      document.getElementById('loadBtn').addEventListener('click', function() {
+        const json = localStorage.getItem('savedForm');
+        if (json) {
+          formBuilder.importFormJSON(json);
+          alert('Form loaded successfully');
+        } else {
+          alert('No saved form found');
+        }
+      });
     });
-  });
-</script>
-```
-
-### Preview-Only Mode
-
-```javascript
-const formBuilder = new FormBuilder({
-  container: document.getElementById('formPreview'),
-  previewOnly: true,
-  initialData: [
-    {
-      id: "email",
-      name: "email",
-      label: "Email",
-      type: "email",
-      placeholder: "Enter your email"
-    },
-    {
-      id: "message",
-      name: "message",
-      label: "Your Message",
-      type: "textarea",
-      placeholder: "Type your message here"
-    }
-  ]
-});
-```
-
-### Using the onChange Callback
-
-```javascript
-const formBuilder = new FormBuilder({
-  container: document.getElementById('formBuilder'),
-  onChange: function(formData) {
-    console.log('Form structure changed:', formData);
-    // Update something based on the new structure
-  }
-});
-```
-
-## Handling Form Submission
-
-FormBuilder creates the form structure, but you'll need to handle the form submission yourself:
-
-```javascript
-// Generate the HTML form
-const formHTML = formBuilder.generateFormHTML();
-document.getElementById('formContainer').innerHTML = formHTML;
-
-// Add a submit button and event handler
-const form = document.getElementById('formContainer').querySelector('form');
-const submitBtn = document.createElement('button');
-submitBtn.type = 'submit';
-submitBtn.textContent = 'Submit';
-form.appendChild(submitBtn);
-
-form.addEventListener('submit', function(e) {
-  e.preventDefault();
-  const formData = new FormData(form);
-  // Process the form data
-  console.log(Object.fromEntries(formData));
-});
+  </script>
+</body>
+</html>
 ```
 
 ## CSS Customization
 
-FormBuilder uses simple class names that you can style with your own CSS:
+FormBuilder uses Bootstrap 5 for basic styles, but you can customize it according to your needs. Some CSS classes you can override:
 
 ```css
-.form-builder .field {
-  margin-bottom: 15px;
+/* Customization example */
+.tag-list {
+  /* Styles for tag list */
 }
 
-.form-builder label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+.tag {
+  /* Styles for individual tags */
 }
 
-.form-builder .form-control {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.form-builder .help-text {
-  font-size: 12px;
-  color: #666;
-  margin-top: 5px;
+.jsonOutput {
+  /* Styles for JSON output */
 }
 ```
 
 ## Browser Compatibility
 
-FormBuilder works in all modern browsers including:
-- Chrome, Firefox, Safari, Edge
-- IE11 (with appropriate polyfills for ES6 features)
+- Chrome (latest version)
+- Firefox (latest version)
+- Safari (latest version)
+- Edge (latest version)
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.

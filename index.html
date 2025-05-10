@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FormBuilder Demo</title>
   <link rel="shortcut icon" href="/img/icon.png" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT" crossorigin="anonymous">
   <style>
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -12,10 +13,11 @@
       max-width: 1200px;
       margin: 0 auto;
       padding: 20px;
+      background-color: #222222;
     }
     
     h1, h2 {
-      color: #333;
+      color: #d7d2d2;
     }
     
     .container {
@@ -51,8 +53,8 @@
 <body>
   <h1>Demo de FormBuilder</h1>
 
-  <div class="container form-builder">
-    <div class="field col-12">
+  <div class="container row">
+    <div class="col-6">
       <label for="version">Select version</label>
       <select name="version" id="version" class="form-control">
         <option value="complete">Complete</option>
@@ -60,9 +62,18 @@
         <option value="simple">Simple</option>
       </select>
     </div>
+    <div class="col-6">
+      <label for="language">Lang</label>
+      <select name="language" id="language" class="form-control">
+        <option value="en">English</option>
+        <option value="es">Spanish</option>
+        <option value="fr">French</option>
+        <option value="de">German</option>
+      </select>
+    </div>
   </div>
 
-  <div class="container" id="complete">
+  <div class="container row" id="complete">
     <h2>Constructor de formularios completo</h2>
     <div id="programmaticContainer"></div>
     <div class="button-container">
@@ -74,175 +85,187 @@
     <div id="formBuilderContainer"></div>
   </div>
 
-  <div class="container d-none" id="preview">
-    <h2>Solo vista previa</h2>
-    <div id="previewOnlyContainer"></div>
-  </div>
+  <form action="" method="post">
+    <div class="container d-none row" id="preview">
+      <h2>Solo vista previa</h2>
+      <div id="previewOnlyContainer"></div>
+      <button type="submit">Send</button>
+    </div>
+  </form>
 
-  <div class="container d-none" id="simple">
+  <div class="container d-none row" id="simple">
     <h2>Constructor simplificado</h2>
     <div id="simpleBuilderContainer"></div>
   </div>
 
   
-
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
   <script src="/js/FormBuilder.js"></script>
   <script >
     // Ejemplo 1: Modo constructor completo
-// --------------------------------------
-// Crear un formulario con todas las opciones
-const container1 = document.getElementById('formBuilderContainer');
-const formBuilder1 = new FormBuilder({
-  container: container1,
-  previewOnly: false, 
-  showJsonView: true,
-  allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help'],
-  showFieldControls: true,
-  enableRealTime: true,
-  inputHidden: 'form-custom',
-  onChange: function(data) {
-    console.log('Formulario actualizado:', data);
-  }
-});
+    // --------------------------------------
+    // Crear un formulario con todas las opciones
+    const container1 = document.getElementById('formBuilderContainer');
+    const formBuilder1 = new FormBuilder({
+      container: container1,
+      previewOnly: false, 
+      showJsonView: true,
+      allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help'],
+      showFieldControls: true,
+      enableRealTime: true,
+      realtimeLayout: 'inline',
+      inputHidden: 'form-custom',
+      onChange: function(data) {
+        console.log('Formulario actualizado:', data);
+      }
+    });
 
-// Ejemplo 2: Solo modo vista previa
-// --------------------------------------
-// Crear un formulario que solo muestra la vista previa con datos predefinidos
-const container2 = document.getElementById('previewOnlyContainer');
-const initialData = [
-  {
-    id: "nombre",
-    name: "nombre",
-    label: "Nombre completo",
-    type: "text",
-    placeholder: "Escriba su nombre completo",
-    help: "Por favor ingrese su nombre y apellidos"
-  },
-  {
-    id: "email",
-    name: "email",
-    label: "Correo electrónico",
-    type: "email",
-    placeholder: "ejemplo@correo.com",
-    help: "Utilizaremos este email para contactarle"
-  },
-  {
-    id: "edad",
-    name: "edad",
-    label: "Edad",
-    type: "number",
-    placeholder: "Su edad"
-  },
-  {
-    id: "categoria",
-    name: "categoria",
-    label: "Categoría",
-    type: "select",
-    options: ["Principiante", "Intermedio", "Avanzado"]
-  },
-  {
-    id: "genero",
-    name: "genero",
-    label: "Género",
-    type: "radio",
-    options: ["Masculino", "Femenino", "Otro"]
-  },
-  {
-    id: "intereses",
-    name: "intereses",
-    label: "Intereses",
-    type: "checkbox",
-    options: ["Deportes", "Música", "Cine", "Lectura", "Viajes"]
-  },
-  {
-    id: "comentarios",
-    name: "comentarios",
-    label: "Comentarios adicionales",
-    type: "textarea",
-    placeholder: "Escriba sus comentarios aquí"
-  }
-];
+    // Ejemplo 2: Solo modo vista previa
+    // --------------------------------------
+    // Crear un formulario que solo muestra la vista previa con datos predefinidos
+    const container2 = document.getElementById('previewOnlyContainer');
+    const initialData = [
+      {
+        id: "nombre",
+        name: "nombre",
+        label: "Nombre completo",
+        type: "text",
+        placeholder: "Escriba su nombre completo",
+        help: "Por favor ingrese su nombre y apellidos"
+      },
+      {
+        id: "email",
+        name: "email",
+        label: "Correo electrónico",
+        type: "email",
+        placeholder: "ejemplo@correo.com",
+        help: "Utilizaremos este email para contactarle"
+      },
+      {
+        id: "edad",
+        name: "edad",
+        label: "Edad",
+        type: "number",
+        placeholder: "Su edad"
+      },
+      {
+        id: "categoria",
+        name: "categoria",
+        label: "Categoría",
+        type: "select",
+        options: ["Principiante", "Intermedio", "Avanzado"]
+      },
+      {
+        id: "genero",
+        name: "genero",
+        label: "Género",
+        type: "radio",
+        options: ["Masculino", "Femenino", "Otro"]
+      },
+      {
+        id: "intereses",
+        name: "intereses",
+        label: "Intereses",
+        type: "checkbox",
+        options: ["Deportes", "Música", "Cine", "Lectura", "Viajes"]
+      },
+      {
+        id: "comentarios",
+        name: "comentarios",
+        label: "Comentarios adicionales",
+        type: "textarea",
+        placeholder: "Escriba sus comentarios aquí"
+      }
+    ];
 
-const formBuilder2 = new FormBuilder({
-  container: container2,
-  previewOnly: true,
-  initialData: initialData
-});
+    const formBuilder2 = new FormBuilder({
+      container: container2,
+      previewOnly: true,
+      previewMode: 'inline',
+      initialData: initialData
+    });
 
-// Ejemplo 3: Constructor simplificado
-// --------------------------------------
-// Solo algunos campos del constructor
-const container3 = document.getElementById('simpleBuilderContainer');
-const formBuilder3 = new FormBuilder({
-  container: container3,
-  allowedFields: ['type', 'fieldId', 'label'], // Solo los campos esenciales
-  showFieldControls: true
-});
+    // Ejemplo 3: Constructor simplificado
+    // --------------------------------------
+    // Solo algunos campos del constructor
+    const container3 = document.getElementById('simpleBuilderContainer');
+    const formBuilder3 = new FormBuilder({
+      container: container3,
+      allowedFields: ['type', 'fieldId', 'label'], // Solo los campos esenciales
+      showFieldControls: true
+    });
 
 
-// Ejemplo de cómo añadir campos programáticamente
-function addSampleFields() {
-  // Configurar campos manualmente
-  formBuilder1.typeField.value = 'text';
-  formBuilder1.fieldIdField.value = 'sample_field';
-  formBuilder1.labelField.value = 'Campo de ejemplo';
-  formBuilder1.placeholderField.value = 'Este es un ejemplo';
-  formBuilder1.helpField.value = 'Campo añadido mediante código';
-  
-  // Añadir el campo
-  formBuilder1.addField();
-  
-  // Añadir un campo de selección
-  formBuilder1.typeField.value = 'select';
-  formBuilder1.fieldIdField.value = 'sample_select';
-  formBuilder1.labelField.value = 'Selección de ejemplo';
-  
-  // Añadir opciones programáticamente
-  formBuilder1.optionList = ['Opción 1', 'Opción 2', 'Opción 3'];
-  formBuilder1.renderOptionTags();
-  
-  // Añadir el campo
-  formBuilder1.addField();
-}
+    // Ejemplo de cómo añadir campos programáticamente
+    function addSampleFields() {
+      // Configurar campos manualmente
+      formBuilder1.typeField.value = 'text';
+      formBuilder1.fieldIdField.value = 'sample_field';
+      formBuilder1.labelField.value = 'Campo de ejemplo';
+      formBuilder1.placeholderField.value = 'Este es un ejemplo';
+      formBuilder1.helpField.value = 'Campo añadido mediante código';
+      
+      // Añadir el campo
+      formBuilder1.addField();
+      
+      // Añadir un campo de selección
+      formBuilder1.typeField.value = 'select';
+      formBuilder1.fieldIdField.value = 'sample_select';
+      formBuilder1.labelField.value = 'Selección de ejemplo';
+      
+      // Añadir opciones programáticamente
+      formBuilder1.optionList = ['Opción 1', 'Opción 2', 'Opción 3'];
+      formBuilder1.renderOptionTags();
+      
+      // Añadir el campo
+      formBuilder1.addField();
+    }
 
-// Ejemplo de cómo exportar e importar
-function exportFormData() {
-  const jsonData = formBuilder1.exportFormJSON();
-  console.log(jsonData);
-  // Aquí podríamos guardar el JSON en localStorage, enviarlo a un servidor, etc.
-  return jsonData;
-}
+    // Ejemplo de cómo exportar e importar
+    function exportFormData() {
+      const jsonData = formBuilder1.exportFormJSON();
+      console.log(jsonData);
+      // Aquí podríamos guardar el JSON en localStorage, enviarlo a un servidor, etc.
+      return jsonData;
+    }
 
-function importFormData() {
-  const jsonData = exportFormData(); // En un caso real, este JSON vendría de otra fuente
-  formBuilder1.importFormJSON(jsonData);
-}
+    function importFormData() {
+      const jsonData = exportFormData(); // En un caso real, este JSON vendría de otra fuente
+      formBuilder1.importFormJSON(jsonData);
+    }
 
-// Generar HTML del formulario
-function generateHTML() {
-  const html = formBuilder1.generateFormHTML();
-  console.log(html);
-  // En un caso real, podríamos insertar este HTML en otra parte de la página
-  return html;
-}
+    // Generar HTML del formulario
+    function generateHTML() {
+      const html = formBuilder1.generateFormHTML();
+      console.log(html);
+      // En un caso real, podríamos insertar este HTML en otra parte de la página
+      return html;
+    }
 
-const version = document.getElementById('version');
-const containers = ['complete', 'preview', 'simple'];
+      const version = document.getElementById('version');
+      const language = document.getElementById('language');
+      const containers = ['complete', 'preview', 'simple'];
 
-version.addEventListener('change', () => {
-  const selectedValue = version.value;
+      version.addEventListener('change', () => {
+        const selectedValue = version.value;
 
-  // Ocultar todos los contenedores
-  containers.forEach(id => {
-    document.getElementById(id).classList.add('d-none');
-  });
+        // Ocultar todos los contenedores
+        containers.forEach(id => {
+          document.getElementById(id).classList.add('d-none');
+        });
 
-  // Mostrar el contenedor seleccionado
-  const selectedContainer = document.getElementById(selectedValue);
-  if (selectedContainer) {
-    selectedContainer.classList.remove('d-none');
-  }
-});
+        // Mostrar el contenedor seleccionado
+        const selectedContainer = document.getElementById(selectedValue);
+        if (selectedContainer) {
+          selectedContainer.classList.remove('d-none');
+        }
+      });
+      language.addEventListener('change',() =>{
+        const selectedValue = language.value;
+        formBuilder1.setLanguage(selectedValue);
+        formBuilder2.setLanguage(selectedValue);
+        formBuilder3.setLanguage(selectedValue);
+      });
   </script>
 </body>
 </html>

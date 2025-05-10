@@ -11,13 +11,15 @@ class FormBuilder {
       initialData: [],
       onChange: null,
       enableRealTime: true,
-      lang: 'es',
+      realtimeLayout: 'column',
+      previewMode: 'modal',
+      lang: 'en',
       ...options
     };
-
+    this._initTranslations();
     // Validar el contenedor
     if (!this.options.container || !(this.options.container instanceof HTMLElement)) {
-      throw new Error('Se requiere un contenedor HTML válido para FormBuilder');
+      throw new Error(this.translations('errorHTML'));
     }
 
     // Estado interno
@@ -26,143 +28,41 @@ class FormBuilder {
     this.editingId = null;
     
     // Inicializar
-    this._initTranslations();
+    
     this._initStyles();
     this.render();
     this.initEvents();
   }
+
   _initStyles(){
     const styles = document.createElement('style');
     styles.textContent = `
-      .form-builder {
-        display: flex;
-        flex-wrap: wrap;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      .tag-list {
+          display: flex;
+          flex-wrap: wrap;
+          margin-top: 8px;
       }
-  
-      .form-builder .col-6 {
-        width: 50%;
-        padding: 15px;
-        box-sizing: border-box;
-      } 
-  
-      .form-builder .col-12 {
-        width: 100%;
-        padding: 15px;
-        box-sizing: border-box;
+
+      .tag {
+          background-color: var(--bs-primary);
+          color: var(--fc-button-text-color);
+          border-radius: 3px;
+          padding: 3px 8px;
+          margin-right: 5px;
+          margin-bottom: 5px;
+          font-size: 13px;
+          display: flex;
+          align-items: center;
       }
-  
-      .form-builder .field {
-        margin-bottom: 15px;
+
+      .tag span {
+          margin-left: 5px;
+          cursor: pointer;
+          font-weight: bold;
+          color: var(--fc-button-text-color);
       }
-  
-      .form-builder label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: 500;
-      }
-  
-      .form-builder .form-control {
-        width: 100%;
-        padding: 8px 12px;
-        margin-bottom: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-        font-size: 14px;
-      }
-  
-      .form-builder .tag-list {
-        display: flex;
-        flex-wrap: wrap;
-        margin-top: 8px;
-      }
-  
-      .form-builder .tag {
-        background-color: #f1f1f1;
-        border-radius: 3px;
-        padding: 3px 8px;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        font-size: 13px;
-        display: flex;
-        align-items: center;
-      }
-  
-      .form-builder .tag span {
-        margin-left: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        color: #777;
-      }
-  
-      .form-builder button {
-        background-color: #4a90e2;
-        color: white;
-        border: none;
-        padding: 10px 15px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-  
-      .form-builder button:hover {
-        background-color: #357abf;
-      }
-  
-      .form-builder .field-controls button {
-        background: none;
-        border: 1px solid #ccc;
-        padding: 2px 5px;
-        border-radius: 3px;
-        color: #333;
-      }
-  
-      .form-builder .field-controls button:hover {
-        background-color: #f5f5f5;
-      }
-  
-      .form-builder .options-container {
-        margin-top: 5px;
-      }
-  
-      .form-builder .option-item {
-        margin-bottom: 5px;
-        display: flex;
-        align-items: center;
-      }
-  
-      .form-builder .option-item input {
-        margin-right: 8px;
-      }
-  
-      .form-builder .option-item label {
-        margin-bottom: 0;
-        font-weight: normal;
-      }
-  
-      .form-builder .help-text {
-        font-size: 12px;
-        color: #666;
-        margin-top: 3px;
-      }
-  
-      .form-builder .field-wrapper {
-        padding: 15px;
-        border: 1px solid #e0e0e0;
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        margin-bottom: 15px;
-      }
-  
-      .form-builder .real-time-preview {
-        margin-top: 20px;
-        padding: 15px;
-        border: 1px dashed #ccc;
-        border-radius: 4px;
-      }
-  
-      .form-builder .jsonOutput {
+
+       .jsonOutput {
         margin-top: 20px;
         padding: 15px;
         background-color: #f5f5f5;
@@ -175,33 +75,26 @@ class FormBuilder {
         width: 100%;
       }
   
-      .form-builder .jsonOutput .key {
+      .jsonOutput .key {
         color: #a71d5d;
       }
   
-      .form-builder .jsonOutput .string {
+      .jsonOutput .string {
         color: #183691;
       }
   
-      .form-builder .jsonOutput .number {
+      .jsonOutput .number {
         color: #0086b3;
       }
   
-      .form-builder .jsonOutput .boolean {
+      .jsonOutput .boolean {
         color: #0086b3;
       }
   
-      .form-builder .jsonOutput .null {
+      .jsonOutput .null {
         color: #a71d5d;
       }
-  
-      .form-builder h3 {
-        margin-top: 0;
-        margin-bottom: 15px;
-      }
       
-      
-
       `;
     document.head.appendChild(styles);
   }
@@ -246,7 +139,13 @@ class FormBuilder {
         'errorIdDuplicate': 'El ID ya está en uso. Por favor, elige uno único.',
         'errorFormDataArray': 'Los datos del formulario deben ser un array',
         'errorImportForm': 'Error al importar el formulario:',
-        'errorLabelRequired': 'Error el label es requerido'
+        'errorLabelRequired': 'Error el label es requerido',
+        'errorHTML': 'Se requiere un contenedor HTML válido para FormBuilder',
+        "errorHTML": "Se requiere un contenedor HTML válido para FormBuilder",
+        "fieldMsg": "Campo",
+        "addMsg": "agregado",
+        "updateMsg": "actualizado",
+        "success": "correctamente"
       },
       'en': {
         // Builder interface
@@ -288,7 +187,13 @@ class FormBuilder {
         'errorIdDuplicate': 'This ID is already in use. Please choose a unique one.',
         'errorFormDataArray': 'Form data must be an array',
         'errorImportForm': 'Error importing form:',
-        'errorLabelRequired': 'Error the label is required'
+        'errorLabelRequired': 'Error the label is required',
+        'errorHTML': 'A valid HTML container is required for FormBuilder',
+        "errorHTML": "A valid HTML container is required for FormBuilder",
+        "fieldMsg": "Field",
+        "addMsg": "added",
+        "updateMsg": "updated",
+        "success": "successfully"
       },
       // Francés
       'fr': {
@@ -331,7 +236,60 @@ class FormBuilder {
         'errorIdDuplicate': 'Cet ID est déjà utilisé. Veuillez en choisir un unique.',
         'errorFormDataArray': 'Les données du formulaire doivent être un tableau',
         'errorImportForm': 'Erreur lors de l\'importation du formulaire:',
-        'errorLabelRequired': 'Erreur le libellé est requis'
+        'errorLabelRequired': 'Erreur le libellé est requis',
+        'errorHTML': 'Un conteneur HTML valide est requis pour FormBuilder',
+        "errorHTML": "Un conteneur HTML valide est requis pour FormBuilder",
+        "fieldMsg": "Champ",
+        "addMsg": "ajouté",
+        "updateMsg": "mis à jour",
+        "success": "avec succès"
+      },
+      'pt': {
+        'fieldType': 'Tipo de campo:',
+        'fieldId': 'ID do campo (único):',
+        'fieldLabel': 'Rótulo (label):',
+        'fieldPlaceholder': 'Placeholder:',
+        'fieldOptions': 'Opções:',
+        'fieldHelp': 'Texto de ajuda:',
+        'optionInputPlaceholder': 'Digite uma opção e pressione Enter',
+        'addFieldButton': 'Adicionar campo',
+        'realtimePreviewTitle': 'Pré-visualização em tempo real',
+        'formPreviewTitle': 'Pré-visualização do formulário',
+        'selectDefault': 'Selecionar...',
+        'previewNote': 'Pré-visualização: Este campo será adicionado ao formulário quando você pressionar "Adicionar campo"',
+        'fieldIdRequired': 'O ID do campo é obrigatório',
+
+        // Tipos de campo
+        'text': 'Texto',
+        'number': 'Número',
+        'email': 'Email',
+        'date': 'Data',
+        'checkbox': 'Checkbox',
+        'radio': 'Radio',
+        'select': 'Select',
+        'textarea': 'Área de texto',
+
+        // Controles de campo
+        'edit': 'Editar',
+        'moveUp': 'Subir',
+        'moveDown': 'Descer',
+        'delete': 'Excluir',
+
+        // Mensagens
+        'noOptionsMsg': 'Nenhuma opção definida',
+        'errorContainer': 'É necessário um contêiner HTML válido para o FormBuilder',
+        'errorIdRequired': 'Por favor, insira um ID para o campo.',
+        'errorOptionsRequired': 'Por favor, adicione pelo menos uma opção para este tipo de campo.',
+        'errorIdDuplicate': 'O ID já está em uso. Por favor, escolha um único.',
+        'errorFormDataArray': 'Os dados do formulário devem ser um array',
+        'errorImportForm': 'Erro ao importar o formulário:',
+        'errorLabelRequired': 'Erro: o rótulo é obrigatório',
+        'errorHTML': 'É necessário um contêiner HTML válido para o FormBuilder',
+        "errorHTML": "É necessário um contêiner HTML válido para o FormBuilder",
+        "fieldMsg": "Campo",
+        "addMsg": "adicionado",
+        "updateMsg": "atualizado",
+        "success": "com sucesso"
       },
       // Alemán
       'de': {
@@ -374,12 +332,19 @@ class FormBuilder {
         'errorIdDuplicate': 'Diese ID wird bereits verwendet. Bitte wählen Sie eine eindeutige ID.',
         'errorFormDataArray': 'Formulardaten müssen ein Array sein',
         'errorImportForm': 'Fehler beim Importieren des Formulars:',
-        'errorLabelRequired': 'Fehler Die Bezeichnung ist erforderlich'
+        'errorLabelRequired': 'Fehler Die Bezeichnung ist erforderlich',
+        'errorHTML': 'Ein gültiger HTML-Container ist für FormBuilder erforderlich',
+        "errorHTML": "Ein gültiger HTML-Container wird für FormBuilder benötigt",
+        "fieldMsg": "Feld",
+        "addMsg": "hinzugefügt",
+        "updateMsg": "aktualisiert",
+        "success": "erfolgreich"
       }
     }
   }
+
   translate(key) {
-    const lang = this.options.lang;
+    const lang = this.options.lang.toLowerCase();;
     // Si el idioma existe y la clave existe en ese idioma
     if (this.translations[lang] && this.translations[lang][key]) {
       return this.translations[lang][key];
@@ -400,6 +365,7 @@ class FormBuilder {
       this.options.lang = lang;
       // Volver a renderizar la interfaz
       this.render();
+      this.initEvents();
       return true;
     }
     return false;
@@ -410,19 +376,20 @@ class FormBuilder {
   render() {
     const container = this.options.container;
     container.innerHTML = '';
-    container.classList.add('form-builder');
+    container.classList.add('row');
 
     if (!this.options.previewOnly) {
       this.renderBuilderInterface(container);
     }
-
     // Siempre mostrar la vista previa
     this.renderPreviewInterface(container);
-
+    
     // Inicializar campos desde los datos iniciales
     this.fieldData.forEach(field => {
-      this.renderFieldToFormPreview(field);
+        this.renderFieldToFormPreview(field);
     });
+    this.updateCount();
+    this.jsonFormInput.value = JSON.stringify(this.fieldData);
   }
 
   /**
@@ -431,7 +398,9 @@ class FormBuilder {
   renderBuilderInterface(container) {
     const builderCol = document.createElement('div');
     
-    builderCol.className = this.options.enableRealTime ? 'col-6 form-final' : 'col-12 form-final';
+    builderCol.className = (this.options.enableRealTime && this.options.realtimeLayout === 'column') 
+      ? 'col-6' 
+      : 'col-12';
     
     // Definir todos los campos posibles
     const fieldDefinitions = {
@@ -439,11 +408,12 @@ class FormBuilder {
         label: this.translate('fieldType'),
         render: () => {
           const field = document.createElement('div');
-          field.className = 'field';
+          field.className = 'mb-3';
           
           const label = document.createElement('label');
           label.setAttribute('for', 'type');
           label.textContent = this.translate('fieldType');
+          label.class = 'form-label';
           
           const select = document.createElement('select');
           select.id = 'type';
@@ -453,7 +423,7 @@ class FormBuilder {
             { value: 'text', text: this.translate('text') },
             { value: 'number', text: this.translate('number') },
             { value: 'email', text: this.translate('email') },
-            { value: 'date', text: this.translate('dete') },
+            { value: 'date', text: this.translate('date') },
             { value: 'checkbox', text: this.translate('checkbox') },
             { value: 'radio', text: this.translate('radio') },
             { value: 'select', text: this.translate('select') },
@@ -478,7 +448,7 @@ class FormBuilder {
         label: this.translate('fieldId'),
         render: () => {
           const field = document.createElement('div');
-          field.className = 'field';
+          field.className = 'mb-3';
           
           const label = document.createElement('label');
           label.setAttribute('for', 'fieldId');
@@ -500,7 +470,7 @@ class FormBuilder {
         label: this.translate('fieldLabel'),
         render: () => {
           const field = document.createElement('div');
-          field.className = 'field';
+          field.className = 'mb-3';
           
           const label = document.createElement('label');
           label.setAttribute('for', 'label');
@@ -522,12 +492,13 @@ class FormBuilder {
         label: this.translate('fieldPlaceholder'),
         render: () => {
           const field = document.createElement('div');
-          field.className = 'field';
+          field.className = 'mb-3';
           field.id = 'placeholderFields';
           
           const label = document.createElement('label');
           label.setAttribute('for', 'placeholder');
           label.textContent = this.translate('fieldPlaceholder');
+          label.className = 'form-label';
           
           const input = document.createElement('input');
           input.className = 'form-control';
@@ -545,12 +516,13 @@ class FormBuilder {
         label: this.translate('fieldOptions'),
         render: () => {
           const field = document.createElement('div');
-          field.className = 'field options-container';
+          field.className = 'mb-3 options-container';
           field.id = 'optionsField';
           
           const label = document.createElement('label');
           label.setAttribute('for', 'optionInput');
           label.textContent = this.translate('fieldOptions');
+          label.className = 'form-label';
           
           const input = document.createElement('input');
           input.className = 'form-control';
@@ -575,11 +547,12 @@ class FormBuilder {
         label: this.translate('fieldHelp'),
         render: () => {
           const field = document.createElement('div');
-          field.className = 'field';
+          field.className = 'mb-3';
           
           const label = document.createElement('label');
           label.setAttribute('for', 'help');
           label.textContent = this.translate('fieldHelp');
+          label.className = 'form-label';
           
           const input = document.createElement('input');
           input.className = 'form-control';
@@ -604,64 +577,245 @@ class FormBuilder {
     
     // Botón para agregar campos
     const addButton = document.createElement('button');
-    addButton.className = 'w-100';
+    addButton.className = 'w-100 btn btn-primary';
     addButton.textContent = this.translate('addFieldButton');
-    addButton.onclick = () => this.addField();
+    addButton.onclick = (event) => {
+      event.preventDefault();
+      this.addField();
+    };
+    
     builderCol.appendChild(addButton);
     container.appendChild(builderCol);
     // Vista previa en tiempo real
     if (this.options.enableRealTime) {
       const realTimeContainer = document.createElement('div');
-      realTimeContainer.className = "col-6"
-      const previewTitle = document.createElement('h4');
+      if (this.options.realtimeLayout === 'column') {
+          realTimeContainer.className = "col-6";
+        } else {
+          realTimeContainer.className = "col-12 mt-3";
+        }
+      const previewTitle = document.createElement('label');
       previewTitle.textContent =  this.translate('realtimePreviewTitle');
-      previewTitle.style.marginTop = '20px';
       realTimeContainer.appendChild(previewTitle);
       
       const realTimePreview = document.createElement('div');
       realTimePreview.id = 'realTimePreview';
-      realTimePreview.className = 'real-time-preview';
-      realTimePreview.style.padding = '10px';
-      realTimePreview.style.border = '1px solid #ddd';
-      realTimePreview.style.borderRadius = '4px';
-      realTimePreview.style.marginTop = '10px';
+      realTimePreview.className = 'form-control p-3';
+
       this.realTimePreview = realTimePreview;
       realTimeContainer.appendChild(realTimePreview);
       container.appendChild(realTimeContainer);
     }
   }
 
-  /**
-   * Renderiza la interfaz de vista previa del formulario
-   */
-  renderPreviewInterface(container) {
-    const previewCol = document.createElement('div');
-    previewCol.className = 'col-12';
+  updateCount(){
+    if (this.options.previewMode === 'modal') {
+      document.getElementById('previewBtn').innerHTML = `
+      ${this.translate('formPreviewTitle')}
+    <span class="badge bg-light text-dark ms-2">${this.fieldData.length}</span>
+    `;
+    }    
+  }
+ /**
+* Renderiza la interfaz de vista previa del formulario
+* Versión mejorada que permite destruir y recrear el modal
+*/
+renderPreviewInterface(container) {
+  if (this.options.previewMode === 'modal') {
+    // Crear botón para abrir modal
+    const previewBtnCol = document.createElement('div');
+    previewBtnCol.className = 'col-12 mt-3';
+    const previewBtn = document.createElement('button');
+    previewBtn.className = 'btn btn-info w-100';
+    previewBtn.setAttribute('id', 'previewBtn');
+    previewBtn.innerHTML = `
+    ${this.translate('formPreviewTitle')}
+    <span class="badge bg-light text-dark ms-2">${this.fieldData.length}</span>
+    `;
+    previewBtn.onclick = (e) => {
+      e.preventDefault(); // evita el envío del formulario
+      this.createAndOpenPreviewModal(); // Crea y abre el modal cada vez
+    };
+    previewBtnCol.appendChild(previewBtn);
+    container.appendChild(previewBtnCol);
     
-    const previewTitle = document.createElement('h3');
+    // No creamos el modal aquí, lo haremos dinámicamente cada vez que se necesite
+  } 
+  else {
+    // Versión inline original
+    const previewCol = document.createElement('div');
+    previewCol.className = 'col-12 mt-3';
+    
+    const previewTitle = document.createElement('h5');
     previewTitle.textContent = this.translate('formPreviewTitle');
     previewCol.appendChild(previewTitle);
     
     const formPreview = document.createElement('div');
     formPreview.id = 'formPreview';
-    formPreview.className = 'form-preview';
+    formPreview.className = 'form-control';
     this.formPreview = formPreview;
     
     previewCol.appendChild(formPreview);
-    
-    // Input oculto para almacenar el JSON del formulario
-    const jsonFormInput = document.createElement('input');
-    jsonFormInput.type = 'hidden';
-    jsonFormInput.id = this.options.inputHidden;
-    this.jsonFormInput = jsonFormInput;
-    
-    previewCol.appendChild(jsonFormInput);
-    
-    // Añadir todo al contenedor
     container.appendChild(previewCol);
   }
+  
+  // Input oculto para almacenar el JSON del formulario (igual para ambos modos)
+  const jsonFormInput = document.createElement('input');
+  jsonFormInput.type = 'hidden';
+  jsonFormInput.id = this.options.inputHidden;
+  jsonFormInput.name = this.options.inputHidden;
+  this.jsonFormInput = jsonFormInput;
+  
+  container.appendChild(jsonFormInput);
+}
 
-  /**
+/**
+ * Crea y abre el modal de vista previa
+ * Se llama cada vez que se quiere abrir el modal
+ */
+createAndOpenPreviewModal() {
+  // Eliminar modal anterior si existe
+  this.removeExistingModal();
+  
+  // Crear el modal dinámicamente
+  const modal = document.createElement('div');
+  modal.className = 'modal fade';
+  modal.id = 'formPreviewModal';
+  modal.tabIndex = -1;
+  modal.setAttribute('aria-hidden', 'true');
+  
+  const modalDialog = document.createElement('div');
+  modalDialog.className = 'modal-dialog modal-lg modal-dialog-centered';
+  
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+  
+  const modalHeader = document.createElement('div');
+  modalHeader.className = 'modal-header';
+  
+  const modalTitle = document.createElement('h5');
+  modalTitle.className = 'modal-title';
+  modalTitle.textContent = this.translate('formPreviewTitle');
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.type = 'button';
+  closeBtn.className = 'btn-close';
+  closeBtn.setAttribute('data-bs-dismiss', 'modal');
+  closeBtn.setAttribute('aria-label', 'Close');
+  
+  modalHeader.appendChild(modalTitle);
+  modalHeader.appendChild(closeBtn);
+  
+  const modalBody = document.createElement('div');
+  modalBody.className = 'modal-body';
+  
+  const formPreview = document.createElement('div');
+  formPreview.id = 'formPreview';
+  this.formPreview = formPreview;
+  
+  modalBody.appendChild(formPreview);
+  modalContent.appendChild(modalHeader);
+  modalContent.appendChild(modalBody);
+  modalDialog.appendChild(modalContent);
+  modal.appendChild(modalDialog);
+  
+  // Agregar el modal al body
+  document.body.appendChild(modal);
+  
+  // Renderizar el contenido del formulario en la vista previa
+  this.fieldData.forEach(field => {
+    this.renderFieldToFormPreview(field);
+  });
+  
+  // Configurar el listener para destruir el modal al cerrarse
+  this.setupModalDestroyOnClose(modal);
+  
+  // Abrir el modal
+  this.openPreviewModal();
+}
+
+/**
+ * Elimina el modal existente si hay uno
+ */
+removeExistingModal() {
+  const existingModal = document.getElementById('formPreviewModal');
+  if (existingModal) {
+    // Remover también el backdrop si existe
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => backdrop.remove());
+    
+    // Eliminar el modal
+    existingModal.remove();
+  }
+}
+
+/**
+ * Configura el modal para destruirse al cerrarse
+ */
+setupModalDestroyOnClose(modal) {
+  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    // Usar eventos de Bootstrap
+    modal.addEventListener('hidden.bs.modal', () => {
+      this.removeExistingModal();
+    });
+  } else {
+    // Configuración manual para el cierre
+    const closeButtons = modal.querySelectorAll('[data-bs-dismiss="modal"]');
+    closeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        this.closeModal(modal);
+        setTimeout(() => this.removeExistingModal(), 300); // Dar tiempo a la animación
+      });
+    });
+    
+    // Cerrar al hacer clic fuera
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) {
+        this.closeModal(modal);
+        setTimeout(() => this.removeExistingModal(), 300);
+      }
+    });
+  }
+}
+
+/**
+ * Abre el modal de vista previa
+ */
+openPreviewModal() {
+  const modalElement = document.getElementById('formPreviewModal');
+  if (!modalElement) return;
+  
+  // Si Bootstrap 5 está disponible, usar su API
+  if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+    const modalInstance = new bootstrap.Modal(modalElement);
+    modalInstance.show();
+  } else {
+    // Fallback manual si Bootstrap no está disponible
+    modalElement.classList.add('show');
+    modalElement.style.display = 'block';
+    document.body.classList.add('modal-open');
+    
+    // Crear backdrop (fondo oscuro)
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    document.body.appendChild(backdrop);
+  }
+}
+
+/**
+ * Cierra el modal manualmente (cuando no se usa Bootstrap)
+ */
+closeModal(modalElement) {
+  modalElement.classList.remove('show');
+  modalElement.style.display = 'none';
+  document.body.classList.remove('modal-open');
+  
+  // Eliminar todos los backdrops
+  const backdrops = document.querySelectorAll('.modal-backdrop');
+  backdrops.forEach(backdrop => {
+    backdrop.remove();
+  });
+}/*
    * Inicializa los eventos de la interfaz
    */
   initEvents() {
@@ -687,6 +841,9 @@ class FormBuilder {
         }
         this.optionInput.value = '';
       }
+    });
+    this.optionInput.addEventListener('input', () => {
+      this.clearValidationErrorForField(this.optionInput);
     });
   }
     
@@ -719,6 +876,15 @@ class FormBuilder {
     
     this.updateOptionsVisibility();
   }
+  // Añade este nuevo método para limpiar errores de un campo específico
+  clearValidationErrorForField(inputElement) {
+      const errorElement = inputElement.parentNode.querySelector('.validation-error');
+      if (errorElement) {
+        errorElement.remove();
+        inputElement.style.borderColor = '';
+        inputElement.classList.remove('fv-plugins-bootstrap5-row-invalid');
+      }
+    }
 
   /**
    * Actualiza la visibilidad del campo de opciones
@@ -779,18 +945,19 @@ class FormBuilder {
 
     // Mensaje si no hay ID
     if (!id) {
-      this.realTimePreview.innerHTML = `<p style="color: #999; font-style: italic;">${this.translate('fieldIdRequired')}</p>`;
+      this.realTimePreview.innerHTML = `<p class="text-danger">${this.translate('fieldIdRequired')}</p>`;
       return;
     }
     
     this.realTimePreview.innerHTML = '';
     const wrapper = document.createElement('div');
-    wrapper.className = 'field';
+    wrapper.className = 'mb-3';
 
     // Añadir etiqueta principal
     if (label) {
       const labelEl = document.createElement('label');
       labelEl.textContent = label;
+      labelEl.className = "form-label";
       if (type !== 'radio' && type !== 'checkbox') {
         labelEl.setAttribute('for', id);
       }
@@ -871,7 +1038,7 @@ class FormBuilder {
 
     if (help) {
       const helpEl = document.createElement('div');
-      helpEl.className = 'help-text';
+      helpEl.className = 'form-text';
       helpEl.textContent = help;
       wrapper.appendChild(helpEl);
     }
@@ -880,9 +1047,7 @@ class FormBuilder {
     
     // Añadir mensaje adicional para mejor UX
     const previewNote = document.createElement('div');
-    previewNote.style.marginTop = '10px';
-    previewNote.style.fontSize = '0.8rem';
-    previewNote.style.color = '#666';
+    previewNote.className = 'mt-3 text-muted';
     previewNote.textContent = this.translate('previewNote');
     this.realTimePreview.appendChild(previewNote);
   }
@@ -916,11 +1081,12 @@ class FormBuilder {
    */
   createFieldElement(field) {
     const wrapper = document.createElement('div');
-    wrapper.className = 'field';
+    wrapper.className = 'mb-3 form-control';
     
     if (field.label) {
       const labelEl = document.createElement('label');
       labelEl.textContent = field.label;
+      labelEl.className = "form-label";
       if (field.type !== 'radio' && field.type !== 'checkbox') {
         labelEl.setAttribute('for', field.id);
       }
@@ -999,7 +1165,7 @@ class FormBuilder {
 
     if (field.help) {
       const helpEl = document.createElement('div');
-      helpEl.className = 'help-text';
+      helpEl.className = 'form-text';
       helpEl.textContent = field.help;
       wrapper.appendChild(helpEl);
     }
@@ -1025,22 +1191,22 @@ class FormBuilder {
       const controls = document.createElement('div');
       controls.className = 'field-controls';
       controls.style.position = 'absolute';
-      controls.style.top = '5px';
+      controls.style.top = '1px';
       controls.style.right = '5px';
-      controls.style.background = 'rgba(255, 255, 255, 0.8)';
-      controls.style.padding = '3px';
+      //controls.style.background = 'rgba(255, 255, 255, 0.8)';
+      controls.style.padding = '2px';
       controls.style.borderRadius = '3px';
 
-      const btnEdit = document.createElement('button');
+      const btnEdit = document.createElement('span');
       btnEdit.appendChild(this.svgCreate(['M12 20h9', 'M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5']));
-      btnEdit.title = 'Editar';
+      btnEdit.title = this.translate('edit');
       btnEdit.onclick = () => {
         this.enterEditMode(field.id);
       };
 
-      const btnUp = document.createElement('button');
+      const btnUp = document.createElement('span');
       btnUp.appendChild(this.svgCreate(['M12 5l0 14','M16 9l-4 -4','M8 9l4 -4']));
-      btnUp.title = 'Subir';
+      btnUp.title = this.translate('moveUp');
       btnUp.onclick = () => {
         if (wrapper.previousElementSibling) {
           this.formPreview.insertBefore(wrapper, wrapper.previousElementSibling);
@@ -1049,9 +1215,9 @@ class FormBuilder {
         }
       };
 
-      const btnDown = document.createElement('button');
+      const btnDown = document.createElement('span');
       btnDown.appendChild(this.svgCreate(['M12 5l0 14','M16 15l-4 4','M8 15l4 4']));
-      btnDown.title = 'Bajar';
+      btnDown.title = this.translate('moveDown');
       btnDown.onclick = () => {
         if (wrapper.nextElementSibling) {
           this.formPreview.insertBefore(wrapper.nextElementSibling, wrapper);
@@ -1060,13 +1226,14 @@ class FormBuilder {
         }
       };
 
-      const btnDelete = document.createElement('button');
+      const btnDelete = document.createElement('span');
       btnDelete.appendChild(this.svgCreate(['M4 7l16 0','M10 11l0 6','M14 11l0 6','M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12','M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3']));
-      btnDelete.title = 'Eliminar';
+      btnDelete.title = this.translate('delete');
       btnDelete.onclick = () => {
         const index = this.fieldData.findIndex(f => f.id === field.id);
         if (index !== -1) this.fieldData.splice(index, 1);
         wrapper.remove();
+        this.updateCount();
         this.updateJSONView();
       };
 
@@ -1079,97 +1246,177 @@ class FormBuilder {
 
       wrapper.appendChild(controls);
     }
-    
-    this.formPreview.appendChild(wrapper);
-  }
-
-  /**
-   * Añade un nuevo campo al formulario
-   */
-  addField() {
-    const type = this.typeField.value;
-    const label = this.labelField.value.trim();
-    const id = this.fieldIdField.value.trim().toLowerCase();
-    const placeholder = this.placeholderField ? this.placeholderField.value.trim() : '';
-    const help = this.helpField ? this.helpField.value.trim() : '';
-    const name = this.fieldIdField.value.trim().toLowerCase();
-
-    if (!id) {
-      alert(this.translate('errorIdRequired'));
-      return;
-    }
-
-    if(!label){
-      alert(this.translate('errorLabelRequired'));
-    }
-
-    // Verificar que existan opciones para los tipos que las requieren
-    if ((type === 'select' || type === 'radio' || type === 'checkbox') && this.optionList.length === 0) {
-      alert(this.translate('errorOptionsRequired'));
-      return;
-    }
-
-    // Solo verificar duplicados cuando no estamos en modo edición
-    if (this.editingId === null && this.fieldData.some(f => f.id === id)) {
-      alert(this.translate('errorIdDuplicate'));
-      return;
-    } else if (this.editingId !== null && this.editingId !== id && this.fieldData.some(f => f.id === id)) {
-      alert(this.translate('errorIdDuplicate'));
-      return;
-    }
-
-    // Si estamos en modo edición, eliminar el campo anterior
-    if (this.editingId !== null) {
-      const oldWrapper = this.formPreview.querySelector(`[data-field-id="${this.editingId}"]`);
-      if (oldWrapper) {
-        oldWrapper.remove();
-      }
-    }
-
-    const newField = {
-      id,
-      name,
-      label,
-      type,
-      placeholder,
-      help,
-      options: ['select', 'radio', 'checkbox'].includes(type) ? [...this.optionList] : []
-    };
-
-    // Actualizar o añadir al array de datos
-    if (this.editingId !== null) {
-      const index = this.fieldData.findIndex(f => f.id === this.editingId);
-      if (index !== -1) {
-        this.fieldData[index] = newField;
-      }
-    } else {
-      // Añadir nuevo campo
-      this.fieldData.push(newField);
-    }
-
-    // Renderizar el campo al formulario de vista previa
-    this.renderFieldToFormPreview(newField);
-    
-    this.updateJSONView();
-
-    // Reset
-    if (!this.options.previewOnly) {
-      this.labelField.value = '';
-      this.fieldIdField.value = '';
-      if (this.placeholderField) this.placeholderField.value = '';
-      if (this.helpField) this.helpField.value = '';
-      if (this.optionInput) this.optionInput.value = '';
-      this.optionList = [];
-      if (this.optionTags) this.optionTags.innerHTML = '';
-      this.editingId = null;
-      this.renderRealTimePreview();
-    }
-    
-    // Llamar al callback si existe
-    if (typeof this.options.onChange === 'function') {
-      this.options.onChange(this.fieldData);
+    if(this.formPreview){
+      this.formPreview.appendChild(wrapper);
     }
   }
+  // Añade este método para mostrar mensajes temporales
+showTemporaryMessage(message, type = 'success', duration = 3000) {
+  const alertDiv = document.createElement('div');
+  alertDiv.className = `alert alert-${type} fade show position-fixed`;
+  alertDiv.style.top = '20px';
+  alertDiv.style.right = '20px';
+  alertDiv.style.zIndex = '9999';
+  alertDiv.style.maxWidth = '300px';
+  alertDiv.innerHTML = message;
+  
+  document.body.appendChild(alertDiv);
+  
+  setTimeout(() => {
+    alertDiv.classList.add('fade');
+    alertDiv.style.opacity = '0';
+    setTimeout(() => {
+      alertDiv.remove();
+    }, 300);
+  }, duration);
+}
+ /**
+* Añade un nuevo campo al formulario
+*/
+addField() {
+  const type = this.typeField.value;
+  const label = this.labelField.value.trim();
+  const id = this.fieldIdField.value.trim().toLowerCase();
+  const placeholder = this.placeholderField ? this.placeholderField.value.trim() : '';
+  const help = this.helpField ? this.helpField.value.trim() : '';
+  const name = this.fieldIdField.value.trim().toLowerCase();
+  
+  // Clear any previous error messages
+  this.clearValidationErrors();
+  
+  // Validation checks
+  let isValid = true;
+  
+  if (!id) {
+    this.showValidationError(this.fieldIdField, this.translate('errorIdRequired'));
+    isValid = false;
+  }
+  
+  if (!label) {
+    this.showValidationError(this.labelField, this.translate('errorLabelRequired'));
+    isValid = false;
+  }
+  
+  // Verify options exist for types that require them
+  if ((type === 'select' || type === 'radio' || type === 'checkbox') && this.optionList.length === 0) {
+    // Assuming optionInput is the field where users enter options
+    this.showValidationError(this.optionInput, this.translate('errorOptionsRequired'));
+    isValid = false;
+  }
+  
+  // Check for duplicate IDs
+  if (this.editingId === null && this.fieldData.some(f => f.id === id)) {
+    this.showValidationError(this.fieldIdField, this.translate('errorIdDuplicate'));
+    isValid = false;
+  } else if (this.editingId !== null && this.editingId !== id && this.fieldData.some(f => f.id === id)) {
+    this.showValidationError(this.fieldIdField, this.translate('errorIdDuplicate'));
+    isValid = false;
+  }
+  
+  // If validation failed, stop here
+  if (!isValid) return;
+  
+  // If we're in edit mode, remove the previous field
+  if (this.editingId !== null) {
+    const oldWrapper = this.formPreview.querySelector(`[data-field-id="${this.editingId}"]`);
+    if (oldWrapper) {
+      oldWrapper.remove();
+    }
+  }
+  const actionText = this.editingId !== null ? this.translate('updateMsg') : this.translate('addMsg');
+  this.showTemporaryMessage(`${this.translate('fieldMsg')} "${label}" ${actionText} ${this.translate('success')}.`, 'success');
+
+  const newField = {
+    id,
+    name,
+    label,
+    type,
+    placeholder,
+    help,
+    options: ['select', 'radio', 'checkbox'].includes(type) ? [...this.optionList] : []
+  };
+  
+  // Update or add to the data array
+  if (this.editingId !== null) {
+    const index = this.fieldData.findIndex(f => f.id === this.editingId);
+    if (index !== -1) {
+      this.fieldData[index] = newField;
+    }
+  } else {
+    // Add new field
+    this.fieldData.push(newField);
+  }
+  
+  // Render the field to the preview form
+  this.renderFieldToFormPreview(newField);
+  this.updateJSONView();
+  
+  // Reset
+  if (!this.options.previewOnly) {
+    this.labelField.value = '';
+    this.fieldIdField.value = '';
+    if (this.placeholderField) this.placeholderField.value = '';
+    if (this.helpField) this.helpField.value = '';
+    if (this.optionInput) this.optionInput.value = '';
+    this.optionList = [];
+    if (this.optionTags) this.optionTags.innerHTML = '';
+    this.editingId = null;
+    this.renderRealTimePreview();
+  }
+    this.updateCount();
+  // Call the callback if it exists
+  if (typeof this.options.onChange === 'function') {
+    this.options.onChange(this.fieldData);
+  }
+}
+    /**
+     * Display validation error message below an input field
+     * @param {HTMLElement} inputElement - The input field with the error
+     * @param {string} message - The error message to display
+     */
+    showValidationError(inputElement, message) {
+      // Create error element if it doesn't exist
+      let errorElement = inputElement.parentNode.querySelector('.validation-error');
+      
+      if (!errorElement) {
+        errorElement = document.createElement('div');
+        errorElement.className = 'validation-error text-danger';
+        
+        // Insert error message after the input
+        inputElement.parentNode.insertBefore(errorElement, inputElement.nextSibling);
+      }
+      
+      errorElement.textContent = message;
+      
+      // Highlight the input field
+      inputElement.style.borderColor = '#d32f2f';
+      inputElement.classList.add('fv-plugins-bootstrap5-row-invalid');
+    }
+    
+    /**
+     * Clear all validation error messages
+     */
+    clearValidationErrors() {
+      // Remove all error messages
+      const errorElements = document.querySelectorAll('.validation-error');
+      errorElements.forEach(el => el.remove());
+      
+      // Reset input styling
+      const inputs = [
+        this.labelField, 
+        this.fieldIdField,
+        this.placeholderField,
+        this.helpField,
+        this.optionInput
+      ].filter(el => el); // Filter out null/undefined elements
+      
+      inputs.forEach(input => {
+        if (input) {
+          input.style.borderColor = '';
+          input.classList.remove('error');
+        }
+      });
+    }
 
   /**
    * Actualiza la vista JSON del formulario
@@ -1177,7 +1424,7 @@ class FormBuilder {
   updateJSONView() {
     // Actualizar el input oculto con los datos actuales
     if (this.jsonFormInput) {
-      this.jsonFormInput.value = JSON.stringify(this.fieldData, null, 2);
+      this.jsonFormInput.value = JSON.stringify(this.fieldData);
     }
     
     // Llamar al callback si existe
@@ -1251,6 +1498,15 @@ class FormBuilder {
   enterEditMode(id) {
     if (this.options.previewOnly) return;
     
+    if (this.options.previewMode === 'modal') {
+      const modalElement = document.getElementById('formPreviewModal');
+      if (modalElement) {
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+          modalInstance.hide();
+        }
+      }
+    }
     const field = this.fieldData.find(f => f.id === id);
     if (!field) return;
 
@@ -1322,7 +1578,7 @@ class FormBuilder {
    * @returns {string} JSON del formulario
    */
   exportFormJSON() {
-    return JSON.stringify(this.fieldData, null, 2);
+    return JSON.stringify(this.fieldData);
   }
 
   /**
