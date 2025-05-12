@@ -79,7 +79,6 @@
     <div class="button-container">
       <button onclick="addSampleFields()">Añadir campos de ejemplo</button>
       <button onclick="exportFormData()">Exportar JSON</button>
-      <button onclick="importFormData()">Importar JSON</button>
       <button onclick="generateHTML()">Generar HTML</button>
     </div>
     <div id="formBuilderContainer"></div>
@@ -191,8 +190,9 @@
     const container3 = document.getElementById('simpleBuilderContainer');
     const formBuilder3 = new FormBuilder({
       container: container3,
-      allowedFields: ['type', 'fieldId', 'label'], // Solo los campos esenciales
-      showFieldControls: true
+      allowedFields: ['type', 'fieldId', 'label'],
+      showFieldControls: true,
+      previewMode: 'inline',
     });
 
 
@@ -223,23 +223,20 @@
 
     // Ejemplo de cómo exportar e importar
     function exportFormData() {
-      const jsonData = formBuilder1.exportFormJSON();
-      console.log(jsonData);
-      // Aquí podríamos guardar el JSON en localStorage, enviarlo a un servidor, etc.
-      return jsonData;
+      formBuilder1.copyFormJSONToClipboard();
+
     }
 
     function importFormData() {
       const jsonData = exportFormData(); // En un caso real, este JSON vendría de otra fuente
       formBuilder1.importFormJSON(jsonData);
+      formBuilder1.showValidationError('','Texto copiado');
     }
 
     // Generar HTML del formulario
     function generateHTML() {
-      const html = formBuilder1.generateFormHTML();
-      console.log(html);
-      // En un caso real, podríamos insertar este HTML en otra parte de la página
-      return html;
+      formBuilder1.copyFormHTMLToClipboard();
+
     }
 
       const version = document.getElementById('version');
