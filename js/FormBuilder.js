@@ -146,7 +146,7 @@ class FormBuilder {
         'copySuccessJSON':'Formulario JSON copiado al portapapeles.',
         'copyErrorHTML':'Error al copiar HTML',
         'copyErrorJSON':'Error al copiar JSON',
-        'initialFieldDeleted': 'El campo ',
+        'initialFieldDeleted': 'El campo',
         'fieldDeleted': 'fue eliminado.'
       },
       'en': {
@@ -195,7 +195,7 @@ class FormBuilder {
         'copySuccessJSON': 'Form JSON copied to clipboard.',
         'copyErrorHTML': 'Error copying HTML.',
         'copyErrorJSON': 'Error copying JSON.',
-        'initialFieldDeleted': 'Field ',
+        'initialFieldDeleted': 'Field',
         'fieldDeleted': 'was deleted.'
       },
       'fr': {
@@ -244,7 +244,7 @@ class FormBuilder {
         'copySuccessJSON': 'Formulaire JSON copié dans le presse-papiers.',
         'copyErrorHTML': 'Erreur lors de la copie du HTML.',
         'copyErrorJSON': 'Erreur lors de la copie du JSON.',
-        'initialFieldDeleted': 'Le champ ',
+        'initialFieldDeleted': 'Le champ',
         'fieldDeleted': 'a été supprimé.'
       },
       'pt': {
@@ -293,7 +293,7 @@ class FormBuilder {
         'copySuccessJSON': 'JSON do formulário copiado para a área de transferência.',
         'copyErrorHTML': 'Erro ao copiar o HTML.',
         'copyErrorJSON': 'Erro ao copiar o JSON.',
-        'initialFieldDeleted': 'O campo ',
+        'initialFieldDeleted': 'O campo',
         'fieldDeleted': 'foi excluído.'
       },
       'de': {
@@ -342,7 +342,7 @@ class FormBuilder {
         'copySuccessJSON': 'Formular-JSON in die Zwischenablage kopiert.',
         'copyErrorHTML': 'Fehler beim Kopieren des HTML.',
         'copyErrorJSON': 'Fehler beim Kopieren des JSON.',
-        'initialFieldDeleted': 'Feld-',
+        'initialFieldDeleted': 'Feld',
         'fieldDeleted': 'wurde gelöscht.'
       }
     }
@@ -1265,7 +1265,7 @@ class FormBuilder {
         const index = this.fieldData.findIndex(f => f.id === field.id);
         if (index !== -1) this.fieldData.splice(index, 1);
         wrapper.remove();
-        this.showTemporaryMessage(`${this.translate('initialFieldDeleted')}${field.label} ${this.translate('fieldDeleted')}`, 'danger');
+        this.showTemporaryMessage(`${this.translate('initialFieldDeleted')} "${field.label}" ${this.translate('fieldDeleted')}`, 'danger');
         this.addInitialForm(this.formPreview);
         this.updateCount();
         this.updateJSONView();
