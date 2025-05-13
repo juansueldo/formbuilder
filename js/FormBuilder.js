@@ -560,7 +560,7 @@ class FormBuilder {
         render: () => {
           const field = document.createElement('div');
           field.className = 'mb-3';
-          field.id = 'placeholderFields';
+          field.id = `placeholderFields-${this.options.displayMode}`;
           
           const label = document.createElement('label');
           label.setAttribute('for', 'placeholder');
@@ -971,7 +971,7 @@ class FormBuilder {
     const type = this.typeField.value;
     console.log(type);
     const optionsField = document.getElementById(`optionsField-${this.options.displayMode}`);
-    const placeholderFields = document.getElementById('placeholderFields');
+    const placeholderFields = document.getElementById(`placeholderFields-${this.options.displayMode}`);
     
     if (optionsField) {
       optionsField.style.display = (type === 'select' || type === 'radio' || type === 'checkbox') ? 'block' : 'none';
@@ -1595,6 +1595,14 @@ class FormBuilder {
     this.typeField.value = field.type;
     this.labelField.value = field.label;
     this.fieldIdField.value = field.id;
+    if(this.options.displayMode === 'tabs'){
+      const tabButtons = this.options.container.querySelectorAll('.tabs-container .nav-link');
+      tabButtons.forEach(tab => {
+        if (tab.getAttribute('data-value') === field.type) {
+          tab.click();
+        }
+      });
+    }
     if (this.placeholderField) this.placeholderField.value = field.placeholder || '';
     if (this.helpField) this.helpField.value = field.help || '';
     
@@ -1604,14 +1612,6 @@ class FormBuilder {
     this.updateOptionsVisibility();
     
     this.typeField.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    if(this.options.displayMode === 'tabs'){
-      const tabButtons = this.options.container.querySelectorAll('.tabs-container .nav-link');
-      tabButtons.forEach(tab => {
-        if (tab.getAttribute('data-value') === field.type) {
-          tab.click();
-        }
-      });
-    }
   }
 
   /**
