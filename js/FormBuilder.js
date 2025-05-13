@@ -407,108 +407,108 @@ class FormBuilder {
     const fieldDefinitions = {
       type: {
         label: this.translate('fieldType'),
-  render: () => {
-    const field = document.createElement('div');
-    field.className = 'mb-3';
+        render: () => {
+          const field = document.createElement('div');
+          field.className = 'mb-3';
     
-    const label = document.createElement('label');
-    label.setAttribute('for', 'type');
-    label.textContent = this.translate('fieldType');
-    label.className = 'form-label'; // Corregido: usamos className en lugar de class
+          const label = document.createElement('label');
+          label.setAttribute('for', 'type');
+          label.textContent = this.translate('fieldType');
+          label.className = 'form-label'; 
     
-    const options = [
-      { value: 'text', text: this.translate('text'), icon: ['M10 12h4', 'M9 4a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3','M15 4a3 3 0 0 0 -3 3v10a3 3 0 0 0 3 3'] },
-      { value: 'number', text: this.translate('number'), icon: ['M11 12h2','M4 10v4a2 2 0 1 0 4 0v-4a2 2 0 1 0 -4 0z','M16 15a1 1 0 0 0 1 1h2a1 1 0 0 0 1 -1v-6a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v2a1 1 0 0 0 1 1h3'] },
-      { value: 'email', text: this.translate('email'), icon: ['M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z','M3 7l9 6l9 -6'] },
-      { value: 'date', text: this.translate('date'), icon: ['M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z','M16 3v4','M8 3v4','M4 11h16','M7 14h.013','M10.01 14h.005','M13.01 14h.005'] },
-      { value: 'checkbox', text: this.translate('checkbox'), icon: ['M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z','M9 12l2 2l4 -4'] },
-      { value: 'radio', text: this.translate('radio'), icon: ['M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0','M9 12l2 2l4 -4'] },
-      { value: 'select', text: this.translate('select'), icon: ['M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z','M9 11l3 3l3 -3'] },
-      { value: 'textarea', text: this.translate('textarea'), icon: ['M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z','M9 13h-2','M13 10h-6','M11 7h-4'] }
-    ];
+          const options = [
+            { value: 'text', text: this.translate('text'), icon: ['M10 12h4', 'M9 4a3 3 0 0 1 3 3v10a3 3 0 0 1 -3 3','M15 4a3 3 0 0 0 -3 3v10a3 3 0 0 0 3 3'] },
+            { value: 'number', text: this.translate('number'), icon: ['M11 12h2','M4 10v4a2 2 0 1 0 4 0v-4a2 2 0 1 0 -4 0z','M16 15a1 1 0 0 0 1 1h2a1 1 0 0 0 1 -1v-6a1 1 0 0 0 -1 -1h-2a1 1 0 0 0 -1 1v2a1 1 0 0 0 1 1h3'] },
+            { value: 'email', text: this.translate('email'), icon: ['M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10z','M3 7l9 6l9 -6'] },
+            { value: 'date', text: this.translate('date'), icon: ['M4 7a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2v-12z','M16 3v4','M8 3v4','M4 11h16','M7 14h.013','M10.01 14h.005','M13.01 14h.005'] },
+            { value: 'checkbox', text: this.translate('checkbox'), icon: ['M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z','M9 12l2 2l4 -4'] },
+            { value: 'radio', text: this.translate('radio'), icon: ['M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0','M9 12l2 2l4 -4'] },
+            { value: 'select', text: this.translate('select'), icon: ['M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z','M9 11l3 3l3 -3'] },
+            { value: 'textarea', text: this.translate('textarea'), icon: ['M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z','M9 13h-2','M13 10h-6','M11 7h-4'] }
+          ];
     
-    if(this.options.displayMode === 'select') {
-      const select = document.createElement('select');
-      select.id = 'type';
-      select.className = 'form-control';
-      options.forEach(opt => {
-        const option = document.createElement('option');
-        option.value = opt.value;
-        option.textContent = opt.text;
-        select.appendChild(option);
-      });
+          if(this.options.displayMode === 'select') {
+            const select = document.createElement('select');
+            select.id = 'type';
+            select.className = 'form-control';
+            options.forEach(opt => {
+              const option = document.createElement('option');
+              option.value = opt.value;
+              option.textContent = opt.text;
+              select.appendChild(option);
+            });
       
-      field.appendChild(label);
-      field.appendChild(select);
+            field.appendChild(label);
+            field.appendChild(select);
       
-      this.typeField = select;
-      return field;
-    } else {
-      const tabsContainer = document.createElement('div');
-      tabsContainer.className = 'tabs-container mb-2';
+            this.typeField = select;
+            return field;
+          } else {
+              const tabsContainer = document.createElement('div');
+              tabsContainer.className = 'tabs-container mb-2';
       
-      const tabNav = document.createElement('ul');
-      tabNav.className = 'nav nav-tabs';
-      tabNav.setAttribute('role', 'tablist');
+              const tabNav = document.createElement('ul');
+              tabNav.className = 'nav nav-tabs';
+              tabNav.setAttribute('role', 'tablist');
     
-      // Campo oculto para almacenar el valor seleccionado
-      const hiddenInput = document.createElement('input');
-      hiddenInput.type = 'hidden';
-      hiddenInput.id = 'type';
-      hiddenInput.value = 'text';
+              // Campo oculto para almacenar el valor seleccionado
+              const hiddenInput = document.createElement('input');
+              hiddenInput.type = 'hidden';
+              hiddenInput.id = 'type';
+              hiddenInput.value = 'text';
       
-      // Función para actualizar el estado activo
-      const setActiveTab = (selectedValue) => {
-        tabNav.querySelectorAll('.nav-link').forEach(tab => {
-          const isActive = tab.getAttribute('data-value') === selectedValue;
-          tab.classList.toggle('active', isActive);
-          tab.classList.toggle('text-muted', !isActive);
-        });
+              // Función para actualizar el estado activo
+              const setActiveTab = (selectedValue) => {
+              tabNav.querySelectorAll('.nav-link').forEach(tab => {
+                const isActive = tab.getAttribute('data-value') === selectedValue;
+                tab.classList.toggle('active', isActive);
+                tab.classList.toggle('text-muted', !isActive);
+              });
         
-        // Actualizar el valor oculto
-        hiddenInput.value = selectedValue;
+              // Actualizar el valor oculto
+              hiddenInput.value = selectedValue;
         
-        // Disparar evento de cambio
-        const changeEvent = new Event('change');
-        hiddenInput.dispatchEvent(changeEvent);
-      };
+              // Disparar evento de cambio
+              const changeEvent = new Event('change');
+              hiddenInput.dispatchEvent(changeEvent);
+            };
       
-      options.forEach((type, index) => {
-        const tabItem = document.createElement('li');
-        tabItem.className = 'nav-item';
-        tabItem.setAttribute('role', 'presentation');
+            options.forEach((type, index) => {
+              const tabItem = document.createElement('li');
+              tabItem.className = 'nav-item';
+              tabItem.setAttribute('role', 'presentation');
+            
+              const tabButton = document.createElement('button');
+              tabButton.className = `nav-link ${index === 0 ? 'active' : 'text-muted'}`;
+              tabButton.setAttribute('type', 'button');
+              tabButton.setAttribute('role', 'tab');
+              tabButton.setAttribute('data-value', type.value);
         
-        const tabButton = document.createElement('button');
-        tabButton.className = `nav-link ${index === 0 ? 'active' : 'text-muted'}`;
-        tabButton.setAttribute('type', 'button');
-        tabButton.setAttribute('role', 'tab');
-        tabButton.setAttribute('data-value', type.value);
+              const icon = this.svgCreate(type.icon);
+              tabButton.appendChild(icon);
         
-        const icon = this.svgCreate(type.icon);
-        tabButton.appendChild(icon);
+              const labelButton = document.createElement('span');
+              labelButton.className = 'ms-1';
+              labelButton.style.fontSize = "0.8rem";
+              labelButton.textContent = `${type.text}`;
+              tabButton.appendChild(labelButton);
         
-        const labelButton = document.createElement('span');
-        labelButton.className = 'ms-1';
-        labelButton.style.fontSize = "0.8rem";
-        labelButton.textContent = `${type.text}`;
-        tabButton.appendChild(labelButton);
+              // Evento click para todo el botón y sus elementos hijos
+              tabButton.addEventListener('click', () => {
+                setActiveTab(type.value);
+              });
         
-        // Evento click para todo el botón y sus elementos hijos
-        tabButton.addEventListener('click', () => {
-          setActiveTab(type.value);
-        });
-        
-        tabItem.appendChild(tabButton);
-        tabNav.appendChild(tabItem);
-      });
+              tabItem.appendChild(tabButton);
+              tabNav.appendChild(tabItem);
+            });
       
-      tabsContainer.appendChild(tabNav);
-      field.appendChild(tabsContainer);
-      field.appendChild(hiddenInput);
+            tabsContainer.appendChild(tabNav);
+            field.appendChild(tabsContainer);
+            field.appendChild(hiddenInput);
       
-      this.typeField = hiddenInput;
-      return field;
-    }
+            this.typeField = hiddenInput;
+            return field;
+          }
         }
       },
       fieldId: {
@@ -584,7 +584,7 @@ class FormBuilder {
         render: () => {
           const field = document.createElement('div');
           field.className = 'mb-3 options-container';
-          field.id = 'optionsField';
+          field.id = `optionsField-${this.options.displayMode}`;
           
           const label = document.createElement('label');
           label.setAttribute('for', 'optionInput');
@@ -969,7 +969,8 @@ class FormBuilder {
     if (this.options.previewOnly) return;
     
     const type = this.typeField.value;
-    const optionsField = document.getElementById('optionsField');
+    console.log(type);
+    const optionsField = document.getElementById(`optionsField-${this.options.displayMode}`);
     const placeholderFields = document.getElementById('placeholderFields');
     
     if (optionsField) {
