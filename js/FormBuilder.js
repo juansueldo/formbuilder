@@ -5,8 +5,9 @@ class FormBuilder {
       container: null,
       inputHidden: 'jsonForm',
       previewOnly: false,
-      allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help'],
+      allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help','cssClass', 'formProperties'],
       showFieldControls: true,
+      validateLabel: true,
       initialData: [],
       initialValues: [],
       onChange: null,
@@ -17,6 +18,7 @@ class FormBuilder {
       lang: 'en',
       addHidden: true,
       displayMode: 'tabs',
+      showInputBorders: 'form-control',
       ...options
     };
     this._initTranslations();
@@ -148,7 +150,9 @@ class FormBuilder {
         'copyErrorHTML':'Error al copiar HTML',
         'copyErrorJSON':'Error al copiar JSON',
         'initialFieldDeleted': 'El campo',
-        'fieldDeleted': 'fue eliminado.'
+        'fieldDeleted': 'fue eliminado.',
+        'fieldCssClass': 'Clases CSS:',
+        'formProperties': 'Propiedades del formulario:',
       },
       'en': {
         'fieldType': 'Field type:',
@@ -197,7 +201,9 @@ class FormBuilder {
         'copyErrorHTML': 'Error copying HTML.',
         'copyErrorJSON': 'Error copying JSON.',
         'initialFieldDeleted': 'Field',
-        'fieldDeleted': 'was deleted.'
+        'fieldDeleted': 'was deleted.',
+        'fieldCssClass': 'CSS Classes:',
+        'formProperties': 'Form Properties:'
       },
       'fr': {
         'fieldType': 'Type de champ:',
@@ -246,7 +252,9 @@ class FormBuilder {
         'copyErrorHTML': 'Erreur lors de la copie du HTML.',
         'copyErrorJSON': 'Erreur lors de la copie du JSON.',
         'initialFieldDeleted': 'Le champ',
-        'fieldDeleted': 'a été supprimé.'
+        'fieldDeleted': 'a été supprimé.',
+        'fieldCssClass': 'Classes CSS :',
+        'formProperties': 'Propriétés du formulaire :'
       },
       'pt': {
         'fieldType': 'Tipo de campo:',
@@ -295,7 +303,9 @@ class FormBuilder {
         'copyErrorHTML': 'Erro ao copiar o HTML.',
         'copyErrorJSON': 'Erro ao copiar o JSON.',
         'initialFieldDeleted': 'O campo',
-        'fieldDeleted': 'foi excluído.'
+        'fieldDeleted': 'foi excluído.',
+        'fieldCssClass': 'Classes CSS:',
+        'formProperties': 'Propriedades do formulário:'
       },
       'de': {
         'fieldType': 'Feldtyp:',
@@ -344,7 +354,9 @@ class FormBuilder {
         'copyErrorHTML': 'Fehler beim Kopieren des HTML.',
         'copyErrorJSON': 'Fehler beim Kopieren des JSON.',
         'initialFieldDeleted': 'Feld',
-        'fieldDeleted': 'wurde gelöscht.'
+        'fieldDeleted': 'wurde gelöscht.',
+        'fieldCssClass': 'CSS-Klassen:',
+        'formProperties': 'Formulareigenschaften:'
       }
     }
   }
@@ -632,6 +644,52 @@ class FormBuilder {
           this.helpField = input;
           return field;
         }
+      },
+      cssClass: {
+        label: this.translate('fieldCssClass'),
+        render: () => {
+          const field = document.createElement('div');
+          field.className = 'mb-3';
+          
+          const label = document.createElement('label');
+          label.setAttribute('for', 'cssClass');
+          label.textContent = this.translate('fieldCssClass');
+          label.className = 'form-label';
+          
+          const input = document.createElement('input');
+          input.className = 'form-control';
+          input.type = 'text';
+          input.id = 'cssClass';
+          
+          field.appendChild(label);
+          field.appendChild(input);
+          
+          this.cssClassField = input;
+          return field;
+        }
+      },
+      formProperties: {
+        label: this.translate('formProperties'),
+        render: () => {
+          const field = document.createElement('div');
+          field.className = 'mb-3';
+          
+          const label = document.createElement('label');
+          label.setAttribute('for', 'formProperties');
+          label.textContent = this.translate('formProperties');
+          label.className = 'form-label';
+          
+          const input = document.createElement('input');
+          input.className = 'form-control';
+          input.type = 'text';
+          input.id = 'formProperties';
+          
+          field.appendChild(label);
+          field.appendChild(input);
+          
+          this.formPropertiesField = input;
+          return field;
+        }
       }
     };
     
@@ -681,9 +739,7 @@ class FormBuilder {
     `;
     }    
   }
-  /**
-  * Renders the form preview interface
-  */
+
   renderPreviewInterface(container) {
     if (this.options.previewMode === 'modal') {
 
@@ -751,9 +807,6 @@ class FormBuilder {
     }
   }
 
-  /**
-  * Create and open the preview modal
-  */
   createAndOpenPreviewModal() {
     this.removeExistingModal();
   
@@ -810,9 +863,6 @@ class FormBuilder {
     this.openPreviewModal();
   }
 
-  /**
-  * Removes the existing modal if there is one
-  */
   removeExistingModal() {
     const existingModal = document.getElementById('formPreviewModal');
     if (existingModal) {
@@ -822,9 +872,7 @@ class FormBuilder {
     }
   }
 
-  /**
-  * Set the modal to be destroyed when closed
-  */
+
   setupModalDestroyOnClose(modal) {
     if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
       modal.addEventListener('hidden.bs.modal', () => {
@@ -847,9 +895,6 @@ class FormBuilder {
     }
   }
 
-  /**
-  * Open the preview modal
-  */
   openPreviewModal() {
     const modalElement = document.getElementById('formPreviewModal');
     if (!modalElement) return;
@@ -868,9 +913,6 @@ class FormBuilder {
     }
   }
 
-  /**
-  * Close the modal manually (when not using Bootstrap)
-  */
   closeModal(modalElement) {
     modalElement.classList.remove('show');
     modalElement.style.display = 'none';
@@ -881,9 +923,7 @@ class FormBuilder {
       backdrop.remove();
     });
   }
-  /*
-  * Initializes interface events
-  */
+
   initEvents() {
     if (this.options.previewOnly) return;
     
@@ -911,7 +951,8 @@ class FormBuilder {
       });
     }
     
-    const updateFields = [this.typeField, this.labelField, this.placeholderField, this.helpField, this.fieldIdField];
+    const updateFields = [this.typeField, this.labelField, this.placeholderField, this.helpField, this.fieldIdField,this.cssClassField, 
+    this.formPropertiesField];
     
     let debounceTimer;
     const debounce = (callback, time) => {
@@ -921,15 +962,16 @@ class FormBuilder {
     
     updateFields.forEach(field => {
       if (field) {
-        // Usar input para actualización inmediata pero con debounce
         field.addEventListener('input', () => {
           const valueInput = field.value.trim();
           if (valueInput === '') {
             if(field.id == 'fieldId'){
               this.showValidationError(field, this.translate('errorIdRequired'));
             }
-            if(field.id == 'label'){
-              this.showValidationError(field, this.translate('errorLabelRequired'));
+            if(this.options.validateLabel){
+              if(field.id == 'label'){
+                this.showValidationError(field, this.translate('errorLabelRequired'));
+              }
             }
           } else {
             this.clearValidationErrorForField(field);
@@ -939,7 +981,6 @@ class FormBuilder {
           }
         });
         
-        // También actualizar en cambio completo
         field.addEventListener('change', () => {
           if (this.options.enableRealTime) {
             this.renderRealTimePreview();
@@ -950,9 +991,7 @@ class FormBuilder {
     
     this.updateOptionsVisibility();
   }
-  /**
-  * Clear errors from a specific field
-  */
+
   clearValidationErrorForField(inputElement) {
     const errorElement = inputElement.parentNode.querySelector('.validation-error');
     if (errorElement) {
@@ -962,9 +1001,7 @@ class FormBuilder {
     }
   }
 
-  /**
-   * Updates the visibility of the options field
-   */
+
   updateOptionsVisibility() {
     if (this.options.previewOnly) return;
     
@@ -984,9 +1021,6 @@ class FormBuilder {
     this.renderRealTimePreview();
   }
 
-  /**
-  * Renders option labels
-  */
   renderOptionTags() {
     this.optionTags.innerHTML = '';
     this.optionList.forEach((opt, i) => {
@@ -1007,17 +1041,15 @@ class FormBuilder {
     });
   }
 
-  /**
-  * Render the preview in real time
-  */
   renderRealTimePreview() {
     if (this.options.previewOnly || !this.realTimePreview) return;
-    
     const type = this.typeField.value;
     const label = this.labelField.value;
     const placeholder = this.placeholderField ? this.placeholderField.value : '';
     const help = this.helpField ? this.helpField.value : '';
     const id = this.fieldIdField.value;
+    const cssClass = this.cssClassField ? this.cssClassField.value : '';
+    const formProperties = this.formPropertiesField ? this.formPropertiesField.value : '';
     const name = this.fieldIdField.value;
 
     if (!id) {
@@ -1042,14 +1074,14 @@ class FormBuilder {
     let input;
     if (type === 'textarea') {
       input = document.createElement('textarea');
-      input.className = 'form-control';
+      input.className = `form-control ${cssClass}`;
       input.placeholder = placeholder;
       input.id = id;
       input.name = name;
       wrapper.appendChild(input);
     } else if (type === 'select') {
       input = document.createElement('select');
-      input.className = 'form-control';
+      input.className = `form-control ${cssClass}`;
       input.id = id;
       input.name = name;
       
@@ -1080,7 +1112,7 @@ class FormBuilder {
       } else {
         this.optionList.forEach(opt => {
           const optWrapper = document.createElement('div');
-          optWrapper.className = 'form-check form-check-inline';
+          optWrapper.className = `form-check form-check-inline ${cssClass}`;
           
           const optInput = document.createElement('input');
           optInput.type = type;
@@ -1102,7 +1134,7 @@ class FormBuilder {
       wrapper.appendChild(optionsContainer);
     } else {
       input = document.createElement('input');
-      input.className = 'form-control';
+      input.className = `form-control ${cssClass}`;
       input.type = type;
       input.placeholder = placeholder;
       input.id = id;
@@ -1125,9 +1157,6 @@ class FormBuilder {
     this.realTimePreview.appendChild(previewNote);
   }
 
-  /**
-  * Create an SVG element for controls
-  */
   svgCreate(paths) {
     const svgNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(svgNS, 'svg');
@@ -1149,12 +1178,9 @@ class FormBuilder {
     return svg;
   }
 
-  /**
-  * Create a field element for preview
-  */
   createFieldElement(field, values = null) {
     const wrapper = document.createElement('div');
-    wrapper.className = 'mb-3 form-control';
+    wrapper.className = `mb-3 ${this.options.showInputBorders}`;
   
     if (field.label) {
       const labelEl = document.createElement('label');
@@ -1169,12 +1195,11 @@ class FormBuilder {
     let input;
     if (field.type === 'textarea') {
       input = document.createElement('textarea');
-      input.className = 'form-control';
+      input.className = field.cssClass ? `form-control ${field.cssClass}` : 'form-control';
       input.placeholder = field.placeholder || '';
       input.id = field.id;
       input.name = field.name;
     
-      // Rellenar con valor si existe
       if (values && values[field.name]) {
         input.value = values[field.name];
       }
@@ -1182,7 +1207,7 @@ class FormBuilder {
       wrapper.appendChild(input);
     } else if (field.type === 'select') {
       input = document.createElement('select');
-      input.className = 'form-control';
+      input.className = field.cssClass ? `form-control ${field.cssClass}` : 'form-control';
       input.id = field.id;
       input.name = field.name;
     
@@ -1200,7 +1225,6 @@ class FormBuilder {
         });
       }
     
-    // Rellenar con valor si existe
       if (values && values[field.name]) {
         input.value = values[field.name];
       }
@@ -1228,7 +1252,6 @@ class FormBuilder {
           optInput.className = "form-check-input";
           optInput.id = `${field.id}_${opt}`;
         
-          // Marcar checkbox/radio si el valor coincide o está en el array
           if (values && values[field.name]) {
             if (field.type === 'checkbox' && Array.isArray(values[field.name])) {
               optInput.checked = values[field.name].includes(opt);
@@ -1251,13 +1274,12 @@ class FormBuilder {
       wrapper.appendChild(optionsContainer);
     } else {
       input = document.createElement('input');
-      input.className = 'form-control';
+      input.className = field.cssClass ? `form-control ${field.cssClass}` : 'form-control';
       input.type = field.type;
       input.placeholder = field.placeholder || '';
       input.id = field.id;
       input.name = field.name;
-    
-      // Rellenar con valor si existe
+
       if (values && values[field.name]) {
         input.value = values[field.name];
       }
@@ -1275,9 +1297,6 @@ class FormBuilder {
     return wrapper;
   }
 
-  /**
-  * Renders a field in the form preview
-  */
   renderFieldToFormPreview(field) {
     const fieldElement = this.createFieldElement(field,this.options.initialValues);
     
@@ -1292,10 +1311,16 @@ class FormBuilder {
       const controls = document.createElement('div');
       controls.className = 'field-controls';
       controls.style.position = 'absolute';
-      controls.style.top = '1px';
-      controls.style.right = '5px';
-      controls.style.padding = '2px';
-      controls.style.borderRadius = '3px';
+      controls.style.right = '12px';
+      if(field.label){
+        controls.style.top = '1px';
+        controls.style.padding = '2px';
+        controls.style.borderRadius = '3px';
+      }else{
+        controls.style.top = '2px';
+        controls.style.padding = '10px';
+        controls.style.borderRadius = '3px';
+      }
 
       const btnEdit = document.createElement('span');
       btnEdit.appendChild(this.svgCreate(['M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1', 'M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z','M16 5l3 3']));
@@ -1352,9 +1377,6 @@ class FormBuilder {
     }
   }
   
-  /**
-   * Display temporary messages 
-   */
   showTemporaryMessage(message, type = 'success', duration = 3000) {
     const alertDiv = document.createElement('div');
     alertDiv.className = `alert alert-${type} fade show position-fixed`;
@@ -1375,15 +1397,14 @@ class FormBuilder {
     }, duration); 
   }
 
-  /**
-  * Add a new field to the form
-  */
   addField() {
     const type = this.typeField.value;
     const label = this.labelField.value.trim();
     const id = this.fieldIdField.value.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, '_');
     const placeholder = this.placeholderField ? this.placeholderField.value.trim() : '';
     const help = this.helpField ? this.helpField.value.trim() : '';
+    const cssClass = this.cssClassField ? this.cssClassField.value.trim() : '';
+    const formProperties = this.formPropertiesField ? this.formPropertiesField.value.trim() : '';
     const name = id;
   
     this.clearValidationErrors();
@@ -1395,9 +1416,11 @@ class FormBuilder {
       isValid = false;
     }
     
-    if (!label) {
-      this.showValidationError(this.labelField, this.translate('errorLabelRequired'));
-      isValid = false;
+    if(this.options.validateLabel){
+      if (!label) {
+        this.showValidationError(this.labelField, this.translate('errorLabelRequired'));
+        isValid = false;
+      }
     }
     
     if ((type === 'select' || type === 'radio' || type === 'checkbox') && this.optionList.length === 0) {
@@ -1431,6 +1454,8 @@ class FormBuilder {
       type,
       placeholder,
       help,
+      cssClass,
+      formProperties,
       options: ['select', 'radio', 'checkbox'].includes(type) ? [...this.optionList] : []
     };
     
@@ -1463,11 +1488,7 @@ class FormBuilder {
       this.options.onChange(this.fieldData);
     }
   }
-  /**
-   * Display validation error message below an input field
-   * @param {HTMLElement} inputElement - The input field with the error
-   * @param {string} message - The error message to display
-   */
+
   showValidationError(inputElement, message) {
     let errorElement = inputElement.parentNode.querySelector('.validation-error');
     
@@ -1483,9 +1504,6 @@ class FormBuilder {
     inputElement.classList.add('fv-plugins-bootstrap5-row-invalid');
   }
     
-  /**
-  * Clear all validation error messages
-  */
   clearValidationErrors() {
     const errorElements = document.querySelectorAll('.validation-error');
     errorElements.forEach(el => el.remove());
@@ -1506,9 +1524,6 @@ class FormBuilder {
     });
   }
 
-  /**
-  * Update the JSON view of the form
-  */
   updateJSONView() {
     if (this.jsonFormInput) {
       this.jsonFormInput.value = JSON.stringify(this.fieldData);
@@ -1530,9 +1545,6 @@ class FormBuilder {
     }
   }
 
-  /**
-  * Highlights JSON syntax to display it in color
-  */
   syntaxHighlight(json) {
     if (typeof json != 'string') {
       json = JSON.stringify(json, undefined, 2);
@@ -1551,9 +1563,6 @@ class FormBuilder {
     });
   }
 
-  /**
-  * Reorders field data according to their order in the DOM
-  */
   reorderFieldData() {
     const wrapperOrder = Array.from(this.formPreview.children).map(wrapper => wrapper.dataset.fieldId);
     
@@ -1572,9 +1581,6 @@ class FormBuilder {
     });
   }
 
-  /**
-  * Enter edit mode for a specific field
-  */
   enterEditMode(id) {
     if (this.options.previewOnly) return;
     
@@ -1605,7 +1611,8 @@ class FormBuilder {
     }
     if (this.placeholderField) this.placeholderField.value = field.placeholder || '';
     if (this.helpField) this.helpField.value = field.help || '';
-    
+    if (this.cssClassField) this.cssClassField.value = field.cssClass || '';
+    if (this.formPropertiesField) this.formPropertiesField.value = field.formProperties || '';
     this.optionList = field.options ? [...field.options] : [];
     this.renderOptionTags();
     
@@ -1614,16 +1621,10 @@ class FormBuilder {
     this.typeField.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
-  /**
-  * Gets form data as JSON
-  */
   getFormData() {
     return this.fieldData;
   }
 
-  /**
-  * Sets form data from a JSON object
-  */
   setFormData(data) {
     if (!Array.isArray(data)) {
       throw new Error(this.translate('errorFormDataArray'));
@@ -1640,12 +1641,24 @@ class FormBuilder {
     this.updateJSONView();
   }
 
-  /**
-  * Generates the form HTML based on the current data
-  */
   generateFormHTML() {
     const formHTML = document.createElement('form');
     
+    const formPropertiesFields = this.fieldData.filter(field => field.formProperties);
+    if (formPropertiesFields.length > 0) {
+      // Usar las propiedades del primer campo que las tenga (o podrías combinarlas)
+      const properties = formPropertiesFields[0].formProperties;
+      // Si es un JSON válido, intenta aplicar las propiedades
+      try {
+        const props = JSON.parse(properties);
+        for (const [key, value] of Object.entries(props)) {
+          formHTML.setAttribute(key, value);
+        }
+      } catch (e) {
+        // Si no es un JSON, asumimos que es una clase o ID
+        formHTML.className = properties;
+      }
+    }
     this.fieldData.forEach(field => {
       const fieldElement = this.createFieldElement(field);
       formHTML.appendChild(fieldElement);
@@ -1654,9 +1667,6 @@ class FormBuilder {
     return formHTML.outerHTML;
   }
 
-  /**
-  * Export the form as JSON
-  */
   exportFormJSON() {
     return JSON.stringify(this.fieldData);
   }
@@ -1675,9 +1685,7 @@ class FormBuilder {
       .catch(err => this.showTemporaryMessage(this.translate('copyErrorJSON'),'danger'));
   }
 
-  /**
-  * Import a form from JSON
-  */
+
   importFormJSON(jsonString) {
     try {
       const data = JSON.parse(jsonString);
