@@ -5,7 +5,7 @@ class FormBuilder {
       container: null,
       inputHidden: 'jsonForm',
       previewOnly: false,
-      allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help','cssClass', 'formProperties'],
+      allowedFields: ['type', 'fieldId', 'label', 'placeholder', 'options', 'help','cssClass', 'formProperties', 'required'],
       showFieldControls: true,
       validateLabel: true,
       initialData: [],
@@ -153,6 +153,7 @@ class FormBuilder {
         'fieldDeleted': 'fue eliminado.',
         'fieldCssClass': 'Clases CSS:',
         'formProperties': 'Propiedades del formulario:',
+        'fieldRequired': 'Campo requerido',
       },
       'en': {
         'fieldType': 'Field type:',
@@ -203,7 +204,8 @@ class FormBuilder {
         'initialFieldDeleted': 'Field',
         'fieldDeleted': 'was deleted.',
         'fieldCssClass': 'CSS Classes:',
-        'formProperties': 'Form Properties:'
+        'formProperties': 'Form Properties:',
+        'fieldRequired': 'Field required',
       },
       'fr': {
         'fieldType': 'Type de champ:',
@@ -690,6 +692,33 @@ class FormBuilder {
           this.formPropertiesField = input;
           return field;
         }
+      },
+      required: {
+        label: this.translate('fieldRequired'),
+        render: () => {
+          const field = document.createElement('div');
+          field.className = 'mb-3';
+          
+          const wrapper = document.createElement('div');
+          wrapper.className = 'form-check';
+          
+          const input = document.createElement('input');
+          input.className = 'form-check-input';
+          input.type = 'checkbox';
+          input.id = 'required';
+          
+          const label = document.createElement('label');
+          label.setAttribute('for', 'required');
+          label.textContent = this.translate('fieldRequired');
+          label.className = 'form-check-label';
+          
+          wrapper.appendChild(input);
+          wrapper.appendChild(label);
+          field.appendChild(wrapper);
+          
+          this.requiredField = input;
+          return field;
+        }
       }
     };
     
@@ -952,7 +981,7 @@ class FormBuilder {
     }
     
     const updateFields = [this.typeField, this.labelField, this.placeholderField, this.helpField, this.fieldIdField,this.cssClassField, 
-    this.formPropertiesField];
+    this.formPropertiesField,this.requiredField];
     
     let debounceTimer;
     const debounce = (callback, time) => {
@@ -1063,12 +1092,12 @@ class FormBuilder {
 
     if (label) {
       const labelEl = document.createElement('label');
-      labelEl.textContent = label;
+      labelEl.textContent = label + (this.requiredField && this.requiredField.checked ? ' *' : '');
       labelEl.className = "form-label";
       if (type !== 'radio' && type !== 'checkbox') {
         labelEl.setAttribute('for', id);
       }
-      wrapper.appendChild(labelEl);
+      wrapper.appendChild(labelEl); 
     }
 
     let input;
@@ -1184,7 +1213,7 @@ class FormBuilder {
   
     if (field.label) {
       const labelEl = document.createElement('label');
-      labelEl.textContent = field.label;
+      labelEl.textContent = field.label + (field.required ? ' *' : '');
       labelEl.className = "form-label";
       if (field.type !== 'radio' && field.type !== 'checkbox') {
         labelEl.setAttribute('for', field.id);
@@ -1199,6 +1228,7 @@ class FormBuilder {
       input.placeholder = field.placeholder || '';
       input.id = field.id;
       input.name = field.name;
+      if (field.required) input.required = true;
     
       if (values && values[field.name]) {
         input.value = values[field.name];
@@ -1210,6 +1240,7 @@ class FormBuilder {
       input.className = field.cssClass ? `form-control ${field.cssClass}` : 'form-control';
       input.id = field.id;
       input.name = field.name;
+      if (field.required) input.required = true;
     
       if (!field.options || field.options.length === 0) {
         const emptyOption = document.createElement('option');
@@ -1279,6 +1310,7 @@ class FormBuilder {
       input.placeholder = field.placeholder || '';
       input.id = field.id;
       input.name = field.name;
+      if (field.required) input.required = true;
 
       if (values && values[field.name]) {
         input.value = values[field.name];
@@ -1405,6 +1437,7 @@ class FormBuilder {
     const help = this.helpField ? this.helpField.value.trim() : '';
     const cssClass = this.cssClassField ? this.cssClassField.value.trim() : '';
     const formProperties = this.formPropertiesField ? this.formPropertiesField.value.trim() : '';
+    const required = this.requiredField ? this.requiredField.checked : false;
     const name = id;
   
     this.clearValidationErrors();
@@ -1456,6 +1489,7 @@ class FormBuilder {
       help,
       cssClass,
       formProperties,
+      required,
       options: ['select', 'radio', 'checkbox'].includes(type) ? [...this.optionList] : []
     };
     
@@ -1480,6 +1514,9 @@ class FormBuilder {
       this.optionList = [];
       if (this.optionTags) this.optionTags.innerHTML = '';
       this.editingId = null;
+      if(this.cssClass) this.cssClass.value='';
+      if(this.properties)this.formProperties.value='';
+      if (this.requiredField) this.requiredField.checked = false;
       this.renderRealTimePreview();
     }
     this.updateCount();
@@ -1613,6 +1650,7 @@ class FormBuilder {
     if (this.helpField) this.helpField.value = field.help || '';
     if (this.cssClassField) this.cssClassField.value = field.cssClass || '';
     if (this.formPropertiesField) this.formPropertiesField.value = field.formProperties || '';
+    if (this.requiredField) this.requiredField.checked = field.required || false;
     this.optionList = field.options ? [...field.options] : [];
     this.renderOptionTags();
     
@@ -1697,3 +1735,4 @@ class FormBuilder {
     }
   }
 }
+
